@@ -92,7 +92,30 @@ main{max-width:1040px;margin:0 auto;padding:clamp(28px,5vw,54px) clamp(10px,3vw,
 .filters .count{margin-left:auto;align-self:center;font-size:12px;letter-spacing:.1em;
   text-transform:uppercase;color:var(--ink);background:var(--panel);border:2px solid var(--line);padding:4px 9px}
 
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:22px}
+
+/* Every card opens with a stage: a live embed where one exists, a generated
+   cover where it doesn't, so the grid never looks half-finished. */
+.shot{
+  position:relative;aspect-ratio:16/10;overflow:hidden;
+  margin:-18px -18px 4px;border-bottom:3px solid var(--line);background:#0f1526;
+}
+.shot canvas{width:100%;height:100%;display:block;image-rendering:pixelated}
+.shot iframe{position:absolute;inset:0;width:1280px;height:800px;border:0;
+  transform-origin:0 0;pointer-events:none;background:#fff}
+.shot .play{
+  position:absolute;inset:auto 0 0 0;display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:9px;font:inherit;font-size:12px;font-weight:bold;letter-spacing:.1em;text-transform:uppercase;
+  background:var(--ink);color:var(--panel);border:0;border-top:3px solid var(--line);cursor:pointer;
+}
+.shot .play:hover{background:var(--accent)}
+.shot .badge{
+  position:absolute;top:8px;left:8px;z-index:2;
+  font-size:10px;font-weight:bold;letter-spacing:.12em;text-transform:uppercase;
+  padding:3px 7px;border:2px solid var(--line);background:var(--gold);
+}
+.shot .badge.dim{background:var(--panel-2);color:var(--ink-soft)}
+.shot.loaded .play{display:none}
 .card{display:flex;flex-direction:column;gap:10px;padding:18px;
   transition:transform .12s steps(2),box-shadow .12s steps(2)}
 .card:hover{transform:translate(-4px,-4px);box-shadow:12px 12px 0 var(--shadow)}
@@ -120,6 +143,11 @@ main{max-width:1040px;margin:0 auto;padding:clamp(28px,5vw,54px) clamp(10px,3vw,
 .tail{margin-top:34px;text-align:center}
 .tail p{margin-bottom:16px;color:var(--ink-soft)}
 
+/* A document that loads hidden — opened in a background tab, prerendered —
+   may never advance its transitions, which would leave revealed content stuck
+   at opacity 0. Show it immediately in that case and animate only once the
+   page is actually being looked at. */
+html.still .rv{opacity:1 !important;transform:none !important;transition:none !important}
 .rv{opacity:0;transform:translateY(18px)}
 .rv.in{opacity:1;transform:none;transition:opacity .4s steps(5),transform .4s steps(5)}
 @media (prefers-reduced-motion: reduce){ .rv{opacity:1;transform:none} }
@@ -159,6 +187,17 @@ main{max-width:1040px;margin:0 auto;padding:clamp(28px,5vw,54px) clamp(10px,3vw,
 <script>
 (() => {
 "use strict";
+// See .still in the stylesheet: never let the reveal animation be the reason
+// a visitor sees an empty page.
+if (document.visibilityState === "hidden") {
+  document.documentElement.classList.add("still");
+  addEventListener("visibilitychange", function once() {
+    if (document.visibilityState !== "visible") return;
+    document.documentElement.classList.remove("still");
+    removeEventListener("visibilitychange", once);
+  });
+}
+
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /* Pulled from the GitHub API by scripts/fetch-projects.mjs — re-run it to refresh. */
@@ -174,10 +213,95 @@ const PROJECTS = [
   "stars": 0,
   "topics": [],
   "url": "https://github.com/aloniewski2/pixel-portfolio",
-  "home": null,
+  "home": "https://aloniewski2.github.io/pixel-portfolio/",
   "updated": "2026-08-18",
   "created": "2026-08-18",
-  "empty": true
+  "empty": false
+ },
+ {
+  "name": "Datadrop",
+  "blurb": "DataDropAI — drop in a CSV or Google Sheet, ask a question in plain English, and get a chart back in seconds. React, D3, Recharts and PapaParse; no setup, no code.",
+  "langs": [
+   "JavaScript"
+  ],
+  "stars": 0,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/Datadrop",
+  "home": "https://aloniewski2.github.io/Datadrop/",
+  "updated": "2026-08-18",
+  "created": "2026-03-28",
+  "empty": false
+ },
+ {
+  "name": "DineValley",
+  "blurb": "Restaurant recommendation web app for the Lehigh Valley — React, TypeScript and Tailwind, with location and preference filters over the Google Places API.",
+  "langs": [
+   "TypeScript",
+   "JavaScript"
+  ],
+  "stars": 3,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/DineValley",
+  "home": "https://dinevalley-frontend.onrender.com",
+  "updated": "2026-08-18",
+  "created": "2025-09-05",
+  "empty": false
+ },
+ {
+  "name": "MyCRM",
+  "blurb": "Personal CRM that tracks contacts and scores relationship warmth, keeping itself current on a cron. React + Vite front end, Express backend, with Gmail, IMAP, Notion, Slack, Claude and Ollama integrations.",
+  "langs": [
+   "JavaScript"
+  ],
+  "stars": 0,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/MyCRM",
+  "home": null,
+  "updated": "2026-08-18",
+  "created": "2026-03-24",
+  "empty": false
+ },
+ {
+  "name": "CampusFi",
+  "blurb": "Concept and product spec for a student finance app — where money goes, cashflow around the academic year, and a safer intro to crypto. Written up, not yet built: this repo is the spec.",
+  "langs": [],
+  "stars": 1,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/CampusFi",
+  "home": null,
+  "updated": "2026-08-18",
+  "created": "2025-10-10",
+  "empty": false
+ },
+ {
+  "name": "1v1club",
+  "blurb": "Peer-to-peer 1v1 skill challenges — friends compete at basketball, chess, pool or games, declare a winner, and earn ranking points on a shared leaderboard. React + TypeScript + Supabase, with iOS builds via Capacitor.",
+  "langs": [
+   "TypeScript",
+   "HTML"
+  ],
+  "stars": 0,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/1v1club",
+  "home": "http://1v1club.com/",
+  "updated": "2026-08-18",
+  "created": "2026-06-25",
+  "empty": false
+ },
+ {
+  "name": "JoblyAI",
+  "blurb": "AI-powered job application tracker that helps you manage your entire job search in one place. Track applications across every stage, match your resume to job descriptions, generate cover letters and tailored resumes, prep for…",
+  "langs": [
+   "TypeScript",
+   "JavaScript"
+  ],
+  "stars": 0,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/JoblyAI",
+  "home": null,
+  "updated": "2026-08-18",
+  "created": "2026-03-28",
+  "empty": false
  },
  {
   "name": "subscription-saver",
@@ -197,21 +321,6 @@ const PROJECTS = [
   "home": null,
   "updated": "2026-08-17",
   "created": "2026-02-02",
-  "empty": false
- },
- {
-  "name": "DineValley",
-  "blurb": "Restaurant recommendation web app for the Lehigh Valley — React, TypeScript and Tailwind, with location and preference filters over the Google Places API.",
-  "langs": [
-   "TypeScript",
-   "JavaScript"
-  ],
-  "stars": 3,
-  "topics": [],
-  "url": "https://github.com/aloniewski2/DineValley",
-  "home": "https://dinevalley-frontend.onrender.com",
-  "updated": "2026-08-17",
-  "created": "2025-09-05",
   "empty": false
  },
  {
@@ -301,64 +410,6 @@ const PROJECTS = [
   "empty": false
  },
  {
-  "name": "MyCRM",
-  "blurb": "Personal CRM that tracks contacts and scores relationship warmth, keeping itself current on a cron. React + Vite front end, Express backend, with Gmail, IMAP, Notion, Slack, Claude and Ollama integrations.",
-  "langs": [
-   "JavaScript"
-  ],
-  "stars": 0,
-  "topics": [],
-  "url": "https://github.com/aloniewski2/MyCRM",
-  "home": null,
-  "updated": "2026-08-17",
-  "created": "2026-03-24",
-  "empty": false
- },
- {
-  "name": "Datadrop",
-  "blurb": "DataDropAI — drop in a CSV or Google Sheet, ask a question in plain English, and get a chart back in seconds. React, D3, Recharts and PapaParse; no setup, no code.",
-  "langs": [
-   "JavaScript"
-  ],
-  "stars": 0,
-  "topics": [],
-  "url": "https://github.com/aloniewski2/Datadrop",
-  "home": null,
-  "updated": "2026-08-17",
-  "created": "2026-03-28",
-  "empty": false
- },
- {
-  "name": "1v1club",
-  "blurb": "Peer-to-peer 1v1 skill challenges for casual games. Friends challenge each other (basketball, gaming, chess, pool…), play, declare a winner, and the winner earns ranking points on a friends leaderboard. (Formerly \"Wagerly\" — the…",
-  "langs": [
-   "TypeScript",
-   "HTML"
-  ],
-  "stars": 0,
-  "topics": [],
-  "url": "https://github.com/aloniewski2/1v1club",
-  "home": "http://1v1club.com/",
-  "updated": "2026-07-07",
-  "created": "2026-06-25",
-  "empty": false
- },
- {
-  "name": "JoblyAI",
-  "blurb": "AI-powered job application tracker that helps you manage your entire job search in one place. Track applications across every stage, match your resume to job descriptions, generate cover letters and tailored resumes, prep for…",
-  "langs": [
-   "TypeScript",
-   "JavaScript"
-  ],
-  "stars": 0,
-  "topics": [],
-  "url": "https://github.com/aloniewski2/JoblyAI",
-  "home": null,
-  "updated": "2026-03-28",
-  "created": "2026-03-28",
-  "empty": false
- },
- {
   "name": "solveit-ai-v1",
   "blurb": "An AI-powered problem-solving app that diagnoses real-world issues from photos or text descriptions. Get step-by-step solutions, visual guides, cost estimates, safety warnings, and connect with local professionals.",
   "langs": [
@@ -384,18 +435,6 @@ const PROJECTS = [
   "home": null,
   "updated": "2025-11-19",
   "created": "2025-11-18",
-  "empty": false
- },
- {
-  "name": "CampusFi",
-  "blurb": "An app that helps students see where money goes, plan cashflow around class life, and try crypto safely. Includes an AI engine that predicts the most sought‑after spend categories on campus and flags trending crypto themes—so…",
-  "langs": [],
-  "stars": 1,
-  "topics": [],
-  "url": "https://github.com/aloniewski2/CampusFi",
-  "home": null,
-  "updated": "2025-11-19",
-  "created": "2025-10-10",
   "empty": false
  },
  {
@@ -650,9 +689,89 @@ const el = (tag, cls, text) => {
 };
 const niceDate = iso => new Date(iso + "T00:00:00").toLocaleDateString("en-US", { month: "short", year: "numeric" });
 
+/* Colour a project by its primary language, so the wall of covers reads as a
+   palette rather than noise. */
+const LANG_HUE = {
+  TypeScript:"#2f7de1", JavaScript:"#e0a92e", Python:"#3fa15a", HTML:"#c8452d",
+  CSS:"#7b4ea8", Java:"#b5651d", Shell:"#4a5568", Jupyter:"#e07b39",
+};
+
+/**
+ * A generated cover for projects with nothing to embed. Deterministic from the
+ * name, so a repo always looks the same, and drawn rather than fetched so the
+ * page keeps its no-external-requests promise.
+ */
+function poster(cv, p){
+  const g = cv.getContext("2d");
+  const W = cv.width = 320, H = cv.height = 200;
+  const base = LANG_HUE[p.langs[0]] || "#4a5568";
+  let seed = 0;
+  for (const ch of p.name) seed = (seed * 31 + ch.charCodeAt(0)) | 0;
+  const rnd = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+
+  g.fillStyle = "#0f1526"; g.fillRect(0, 0, W, H);
+  // a drifting field of blocks in the language colour
+  for (let i = 0; i < 90; i++){
+    const x = (rnd() * W) | 0, y = (rnd() * H) | 0, w = 6 + ((rnd() * 26) | 0);
+    g.globalAlpha = 0.06 + rnd() * 0.20;
+    g.fillStyle = base;
+    g.fillRect(x, y, w, 6);
+  }
+  g.globalAlpha = 1;
+  // initials, in the same 5x7 font as the headings
+  const initials = p.name.replace(/[^A-Za-z0-9]/g, " ").split(/\s+/)
+    .filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
+  const cols = initials.length * 6 - 1, scale = 6;
+  const ox = (W - cols * scale) / 2, oy = (H - 7 * scale) / 2;
+  for (let i = 0; i < initials.length; i++){
+    const gl = F[initials[i]] || F[" "];
+    for (let r = 0; r < 7; r++) for (let k = 0; k < 5; k++){
+      if (gl[r][k] !== "#") continue;
+      g.fillStyle = "#0f1526";
+      g.fillRect(ox + (i*6+k)*scale + 3, oy + r*scale + 3, scale, scale);
+      g.fillStyle = base;
+      g.fillRect(ox + (i*6+k)*scale, oy + r*scale, scale, scale);
+    }
+  }
+}
+
+/** Live sites get a real embed, loaded only when asked for. */
+function stage(p){
+  const box = el("div", "shot");
+  const cv = el("canvas");
+  box.append(cv);
+  poster(cv, p);
+
+  // 1v1club.com serves over http and redirects to https; embedding the http
+  // URL from an https page is blocked as mixed content, so upgrade it.
+  const live = p.home ? p.home.replace(/^http:\/\//, "https://") : null;
+
+  box.append(el("span", "badge" + (live ? "" : " dim"), live ? "Live demo" : "Source"));
+  if (!live) return box;
+
+  const play = el("button", "play", "\u25B6 Load live demo");
+  play.type = "button";
+  play.onclick = () => {
+    const frame = document.createElement("iframe");
+    frame.src = live;
+    frame.loading = "lazy";
+    frame.title = p.name + " live demo";
+    frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-popups allow-forms");
+    box.append(frame);
+    box.classList.add("loaded");
+    const fit = () => { frame.style.transform = `scale(${box.clientWidth / 1280})`; };
+    fit();
+    new ResizeObserver(fit).observe(box);
+  };
+  box.append(play);
+  return box;
+}
+
 function card(p){
   const c = el("article", "panel card rv");
   c.dataset.langs = p.langs.join("|");
+
+  c.append(stage(p));
 
   const top = el("div", "top");
   top.append(el("h2", null, p.name));
