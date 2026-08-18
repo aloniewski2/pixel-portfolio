@@ -1984,6 +1984,15 @@ function periodOf(when){
 
 const shortUrl = u => String(u).replace(/^https?:\/\//, "").replace(/\/$/, "");
 
+const listOf = kind => INDEX.filter(e => e.kind === kind);
+const label = e =>
+    e.kind === "job"     ? `${e.name} — ${e.role} (${e.when})`
+  : e.kind === "project" ? `${e.name} — ${e.when}`
+  : e.kind === "repo"    ? `${e.name} (GitHub)`
+  : e.kind === "skills"  ? e.name
+  : e.when               ? `${e.name} — ${e.when}`
+  : e.name;
+
 /* What the visitor is currently asking about, so "tell me more" means
    something and follow-ups stay on topic. */
 function setTopic(entry){
