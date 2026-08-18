@@ -107,6 +107,15 @@ the way out, so nothing arrives as a wall of formal prose:
 | Off-limits questions | *"expected salary?"* → declines and points to email |
 | Synonym expansion | *js → JavaScript*, *quant → quantitative*, *uni → college*, ~50 more |
 | Word-boundary matching | so "go" doesn't match "al**go**rithms" |
+| Whole-catalogue awareness | *"what else has he built?"* lists every public repo, and naming one (*"tell me about CampusFi"*) pulls its description and link |
+
+Beyond the three hand-written project cards, `scripts/fetch-projects.mjs` writes the full public
+repo list into a JSON island on the page, which the indexer reads. Refreshing the projects page and
+the assistant's knowledge is therefore one command:
+
+```bash
+GITHUB_TOKEN=$(gh auth token) node scripts/fetch-projects.mjs
+```
 
 Phrasing varies between runs (several openers per answer type), so asking the same thing twice
 doesn't produce a copy-paste reply.
