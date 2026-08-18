@@ -1,0 +1,739 @@
+<title>Andrew Loniewski — Projects</title>
+<meta charset="utf-8">
+<!-- Without this, phones lay the page out at ~980px and zoom out: every
+     line of text arrives microscopic. It is the single highest-impact tag here. -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Every public project by Andrew Loniewski, pulled straight from GitHub.">
+<meta name="author" content="Andrew Loniewski">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='6' y='3' width='4' height='10' fill='%23f2b134'/><rect x='3' y='6' width='10' height='4' fill='%23f2b134'/><rect x='5' y='5' width='6' height='6' fill='%23ffd94a'/><rect x='0' y='7' width='2' height='2' fill='%23ffd94a'/><rect x='14' y='7' width='2' height='2' fill='%23ffd94a'/><rect x='7' y='0' width='2' height='2' fill='%23ffd94a'/><rect x='7' y='14' width='2' height='2' fill='%23ffd94a'/></svg>">
+
+<!-- Link previews: without these a shared URL renders as bare text.
+     og:image must be absolute once deployed — swap in your real domain. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Andrew Loniewski">
+<meta property="og:title" content="Andrew Loniewski — Projects">
+<meta property="og:description" content="Every public project by Andrew Loniewski, pulled straight from GitHub.">
+<meta property="og:image" content="og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Andrew Loniewski — Projects">
+<meta name="twitter:description" content="Every public project by Andrew Loniewski, pulled straight from GitHub.">
+<meta name="twitter:image" content="og.png">
+
+<style>
+:root{
+  --ink:#191a2c; --ink-soft:#3d3f5c;
+  --panel:#fffaef; --panel-2:#f4e8cf; --line:#191a2c;
+  --accent:#ff6f4a; --accent-2:#2f7de1; --gold:#f2b134; --green:#3fa15a;
+  --shadow:rgba(25,26,44,.45);
+  --pad:clamp(16px,3vw,28px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:#7fc9ef; color:var(--ink);
+  font-family:"Courier New",ui-monospace,Menlo,Consolas,monospace;
+  font-size:15px; line-height:1.65; overflow-x:hidden; -webkit-font-smoothing:none;
+}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
+a{color:var(--accent-2);text-decoration:none;border-bottom:2px solid currentColor}
+a:hover{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+#sky{position:fixed;inset:0;width:100%;height:100%;z-index:-2;display:block;
+  image-rendering:pixelated;image-rendering:crisp-edges}
+#veil{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.35;
+  background:repeating-linear-gradient(to bottom,rgba(0,0,0,.05) 0 2px,rgba(0,0,0,0) 2px 4px)}
+
+.panel{background:var(--panel);border:3px solid var(--line);box-shadow:8px 8px 0 var(--shadow);padding:var(--pad)}
+.pxt{display:block;line-height:0;font-size:0}
+.pxt canvas{image-rendering:pixelated;display:block}
+
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  border:3px solid var(--line);background:var(--panel-2);color:var(--ink);
+  padding:9px 16px;font:inherit;font-size:13px;font-weight:bold;
+  letter-spacing:.1em;text-transform:uppercase;box-shadow:5px 5px 0 var(--line);cursor:pointer;
+  transition:transform .1s steps(2),box-shadow .1s steps(2);
+}
+.btn:hover{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--line);color:var(--ink)}
+.btn.primary{background:var(--accent);color:#fff}
+
+header{position:sticky;top:0;z-index:50;background:var(--panel);
+  border-bottom:3px solid var(--line);box-shadow:0 5px 0 var(--shadow)}
+.nav{max-width:1040px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:8px clamp(10px,3vw,20px)}
+.nav .dot{width:14px;height:14px;background:var(--gold);border:2px solid var(--line);flex:0 0 auto}
+.nav b{font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.nav .back{margin-left:auto;border:0;font-size:12px;font-weight:bold;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-soft);padding:6px 10px}
+.nav .back:hover{background:var(--ink);color:var(--panel)}
+
+main{max-width:1040px;margin:0 auto;padding:clamp(28px,5vw,54px) clamp(10px,3vw,26px) 90px}
+
+.head{margin-bottom:26px}
+.head .kicker{display:inline-block;background:var(--ink);color:var(--panel);padding:4px 11px;
+  font-size:12px;font-weight:bold;letter-spacing:.16em;text-transform:uppercase;
+  margin-bottom:18px;box-shadow:4px 4px 0 var(--shadow)}
+.head p{max-width:60ch;font-weight:bold;color:var(--ink);
+  text-shadow:-1px 0 var(--panel),1px 0 var(--panel),0 -1px var(--panel),0 1px var(--panel),
+    -1px -1px var(--panel),1px -1px var(--panel),-1px 1px var(--panel),1px 1px var(--panel)}
+
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 24px}
+.filters button{
+  border:3px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;
+  font:inherit;font-size:12px;font-weight:bold;letter-spacing:.08em;text-transform:uppercase;
+  padding:7px 12px;box-shadow:4px 4px 0 var(--shadow);
+}
+.filters button:hover{background:var(--gold)}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+.filters .count{margin-left:auto;align-self:center;font-size:12px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink);background:var(--panel);border:2px solid var(--line);padding:4px 9px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.card{display:flex;flex-direction:column;gap:10px;padding:18px;
+  transition:transform .12s steps(2),box-shadow .12s steps(2)}
+.card:hover{transform:translate(-4px,-4px);box-shadow:12px 12px 0 var(--shadow)}
+.card[hidden]{display:none}
+.card .top{display:flex;align-items:flex-start;gap:10px}
+.card h2{font-size:16px;letter-spacing:.01em;word-break:break-word;flex:1}
+.card .star{font-size:12px;font-weight:bold;background:var(--gold);border:2px solid var(--line);
+  padding:1px 7px;white-space:nowrap;flex:0 0 auto}
+.card .blurb{font-size:14px;flex:1}
+.card .blurb.none{color:var(--ink-soft);font-style:italic}
+.card .tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{display:inline-block;border:2px solid var(--line);background:var(--panel-2);
+  padding:2px 8px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.tag.lang{background:var(--accent-2);color:#fff}
+.tag.feat{background:var(--accent);color:#fff}
+.tag.wip{background:var(--panel);color:var(--ink-soft)}
+.card .foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  border-top:2px dashed var(--ink-soft);padding-top:11px;margin-top:2px}
+.card .when{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-right:auto}
+.card .link{border:0;font-size:12px;font-weight:bold;letter-spacing:.08em;text-transform:uppercase;
+  background:var(--ink);color:var(--panel);padding:5px 10px}
+.card .link:hover{background:var(--accent);color:#fff}
+.card .link.ghost{background:var(--panel-2);color:var(--ink);border:2px solid var(--line);padding:3px 8px}
+
+.tail{margin-top:34px;text-align:center}
+.tail p{margin-bottom:16px;color:var(--ink-soft)}
+
+.rv{opacity:0;transform:translateY(18px)}
+.rv.in{opacity:1;transform:none;transition:opacity .4s steps(5),transform .4s steps(5)}
+@media (prefers-reduced-motion: reduce){ .rv{opacity:1;transform:none} }
+</style>
+
+<canvas id="sky" aria-hidden="true"></canvas>
+<div id="veil" aria-hidden="true"></div>
+
+<header>
+  <nav class="nav">
+    <div class="dot"></div>
+    <b>Andrew Loniewski</b>
+    <a class="back" href="index.html" id="backLink">&#8592; Back to portfolio</a>
+  </nav>
+</header>
+
+<main>
+  <div class="head">
+    <div class="kicker">Everything on GitHub</div>
+    <span class="pxt" data-text="ALL PROJECTS" data-scale="8" data-min="3"></span>
+    <p style="margin-top:16px">
+      Every public repository, straight from
+      <a href="https://github.com/aloniewski2" target="_blank" rel="noopener">github.com/aloniewski2</a>
+      — newest first.
+    </p>
+  </div>
+
+  <div class="filters" id="filters" role="group" aria-label="Filter projects by language"></div>
+  <div class="grid" id="grid"></div>
+
+  <div class="tail">
+    <p>Three of these are written up in detail on the main page.</p>
+    <a class="btn primary" href="index.html">Back to the portfolio</a>
+  </div>
+</main>
+
+<script>
+(() => {
+"use strict";
+const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* Pulled from the GitHub API by scripts/fetch-projects.mjs — re-run it to refresh. */
+/* PROJECTS:START */
+const PROJECTS = [
+ {
+  "name": "subscription-saver",
+  "blurb": "LeakGuard — privacy-first subscription leak detector. Analyses bank statements entirely in the browser (zero backend) to surface recurring charges, duplicate services and hidden price rises, scored 0–100. React, TypeScript,…",
+  "langs": [
+   "TypeScript"
+  ],
+  "stars": 0,
+  "topics": [
+   "fintech",
+   "personal-finance",
+   "privacy",
+   "react",
+   "typescript"
+  ],
+  "url": "https://github.com/aloniewski2/subscription-saver",
+  "home": null,
+  "updated": "2026-08-17",
+  "created": "2026-02-02",
+  "empty": false
+ },
+ {
+  "name": "DineValley",
+  "blurb": "Restaurant recommendation web app for the Lehigh Valley — React, TypeScript and Tailwind, with location and preference filters over the Google Places API.",
+  "langs": [
+   "TypeScript",
+   "JavaScript"
+  ],
+  "stars": 3,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/DineValley",
+  "home": "https://dinevalley-frontend.onrender.com",
+  "updated": "2026-08-17",
+  "created": "2025-09-05",
+  "empty": false
+ },
+ {
+  "name": "Stock_Predictor",
+  "blurb": "Web app for managing a stock portfolio and predicting future prices. Python and HTML.",
+  "langs": [
+   "HTML",
+   "Python"
+  ],
+  "stars": 1,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/Stock_Predictor",
+  "home": null,
+  "updated": "2026-08-17",
+  "created": "2024-11-19",
+  "empty": false
+ },
+ {
+  "name": "aloniewski2.github.io-",
+  "blurb": "Personal portfolio site — skills, projects, achievements and education.",
+  "langs": [
+   "HTML"
+  ],
+  "stars": 1,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/aloniewski2.github.io-",
+  "home": null,
+  "updated": "2026-08-17",
+  "created": "2024-11-17",
+  "empty": false
+ },
+ {
+  "name": "CryptoArmor",
+  "blurb": "Pre-transaction risk intelligence platform for Web3 security. TypeScript.",
+  "langs": [
+   "TypeScript"
+  ],
+  "stars": 1,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/CryptoArmor",
+  "home": null,
+  "updated": "2026-08-17",
+  "created": "2026-01-05",
+  "empty": false
+ },
+ {
+  "name": "ExchangeExplorer",
+  "blurb": "Cryptocurrency exchange simulation and end-to-end testing framework — a visual, real-time demonstration of trading operations. React, TypeScript and Supabase.",
+  "langs": [
+   "TypeScript"
+  ],
+  "stars": 0,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/ExchangeExplorer",
+  "home": null,
+  "updated": "2026-08-17",
+  "created": "2026-01-05",
+  "empty": false
+ },
+ {
+  "name": "MYSQL-CRUD-Project",
+  "blurb": "Node/Express REST API over MySQL — full CRUD with schema and seed SQL, routed queries and environment-based config.",
+  "langs": [
+   "JavaScript"
+  ],
+  "stars": 1,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/MYSQL-CRUD-Project",
+  "home": null,
+  "updated": "2026-08-17",
+  "created": "2025-10-29",
+  "empty": false
+ },
+ {
+  "name": "MyCRM",
+  "blurb": "Personal CRM that tracks contacts and scores relationship warmth, keeping itself current on a cron. React + Vite front end, Express backend, with Gmail, IMAP, Notion, Slack, Claude and Ollama integrations.",
+  "langs": [
+   "JavaScript"
+  ],
+  "stars": 0,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/MyCRM",
+  "home": null,
+  "updated": "2026-08-17",
+  "created": "2026-03-24",
+  "empty": false
+ },
+ {
+  "name": "PartyAux",
+  "blurb": "Collaborative party queue — guests join a room by code and add tracks to a shared Spotify queue. Next.js, Supabase and Google Gemini.",
+  "langs": [
+   "TypeScript",
+   "PLpgSQL"
+  ],
+  "stars": 0,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/PartyAux",
+  "home": null,
+  "updated": "2026-08-17",
+  "created": "2026-04-13",
+  "empty": false
+ },
+ {
+  "name": "Datadrop",
+  "blurb": "DataDropAI — drop in a CSV or Google Sheet, ask a question in plain English, and get a chart back in seconds. React, D3, Recharts and PapaParse; no setup, no code.",
+  "langs": [
+   "JavaScript"
+  ],
+  "stars": 0,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/Datadrop",
+  "home": null,
+  "updated": "2026-08-17",
+  "created": "2026-03-28",
+  "empty": false
+ },
+ {
+  "name": "1v1club",
+  "blurb": "Peer-to-peer 1v1 skill challenges for casual games. Friends challenge each other (basketball, gaming, chess, pool…), play, declare a winner, and the winner earns ranking points on a friends leaderboard. (Formerly \"Wagerly\" — the…",
+  "langs": [
+   "TypeScript",
+   "HTML"
+  ],
+  "stars": 0,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/1v1club",
+  "home": "http://1v1club.com/",
+  "updated": "2026-07-07",
+  "created": "2026-06-25",
+  "empty": false
+ },
+ {
+  "name": "JoblyAI",
+  "blurb": "AI-powered job application tracker that helps you manage your entire job search in one place. Track applications across every stage, match your resume to job descriptions, generate cover letters and tailored resumes, prep for…",
+  "langs": [
+   "TypeScript",
+   "JavaScript"
+  ],
+  "stars": 0,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/JoblyAI",
+  "home": null,
+  "updated": "2026-03-28",
+  "created": "2026-03-28",
+  "empty": false
+ },
+ {
+  "name": "subsciption-hero",
+  "blurb": null,
+  "langs": [],
+  "stars": 0,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/subsciption-hero",
+  "home": null,
+  "updated": "2026-02-02",
+  "created": "2026-02-02",
+  "empty": true
+ },
+ {
+  "name": "solveit-ai-v1",
+  "blurb": "An AI-powered problem-solving app that diagnoses real-world issues from photos or text descriptions. Get step-by-step solutions, visual guides, cost estimates, safety warnings, and connect with local professionals.",
+  "langs": [
+   "TypeScript"
+  ],
+  "stars": 1,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/solveit-ai-v1",
+  "home": null,
+  "updated": "2025-12-18",
+  "created": "2025-12-18",
+  "empty": false
+ },
+ {
+  "name": "MealMatch",
+  "blurb": "MealMatch is a full-stack recipe finder that merges TheMealDB and Spoonacular results, scores them by how closely they match your pantry, and augments the details with USDA nutrition data. Search by ingredients, filter by cuisine…",
+  "langs": [
+   "JavaScript"
+  ],
+  "stars": 0,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/MealMatch",
+  "home": null,
+  "updated": "2025-11-19",
+  "created": "2025-11-18",
+  "empty": false
+ },
+ {
+  "name": "CampusFi",
+  "blurb": "An app that helps students see where money goes, plan cashflow around class life, and try crypto safely. Includes an AI engine that predicts the most sought‑after spend categories on campus and flags trending crypto themes—so…",
+  "langs": [],
+  "stars": 1,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/CampusFi",
+  "home": null,
+  "updated": "2025-11-19",
+  "created": "2025-10-10",
+  "empty": false
+ },
+ {
+  "name": "DineValley-test",
+  "blurb": "Restaurant Recommendator web app for Lehigh Valley, PA — location & preference-based filters with ranked recommendations.",
+  "langs": [
+   "TypeScript",
+   "CSS"
+  ],
+  "stars": 0,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/DineValley-test",
+  "home": null,
+  "updated": "2025-09-22",
+  "created": "2025-09-02",
+  "empty": false
+ },
+ {
+  "name": "SupplyChainAI",
+  "blurb": "Supply Chain Assistant: Full-stack web app for real-time supply chain analytics. FastAPI backend, Dash frontend, ML for forecasting and optimization. Integrates with simulated real-time data. Tech: Python, Pandas, NumPy,…",
+  "langs": [
+   "Python",
+   "HTML"
+  ],
+  "stars": 1,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/SupplyChainAI",
+  "home": null,
+  "updated": "2024-12-05",
+  "created": "2024-12-05",
+  "empty": false
+ }
+];
+/* PROJECTS:END */
+
+// The three written up on the main page.
+const FEATURED = { "subscription-saver": "LeakGuard", "solveit-ai-v1": "SolveIT AI", "DineValley": "DineValley" };
+
+/* ---------- 5x7 bitmap font, same as the main page ---------- */
+const F = {
+" ":["     ","     ","     ","     ","     ","     ","     "],
+"A":[".###.","#...#","#...#","#####","#...#","#...#","#...#"],
+"B":["####.","#...#","#...#","####.","#...#","#...#","####."],
+"C":[".###.","#...#","#....","#....","#....","#...#",".###."],
+"D":["####.","#...#","#...#","#...#","#...#","#...#","####."],
+"E":["#####","#....","#....","####.","#....","#....","#####"],
+"F":["#####","#....","#....","####.","#....","#....","#...."],
+"G":[".###.","#...#","#....","#.###","#...#","#...#",".###."],
+"H":["#...#","#...#","#...#","#####","#...#","#...#","#...#"],
+"I":["#####","..#..","..#..","..#..","..#..","..#..","#####"],
+"J":["..###","...#.","...#.","...#.","...#.","#..#.",".##.."],
+"K":["#...#","#..#.","#.#..","##...","#.#..","#..#.","#...#"],
+"L":["#....","#....","#....","#....","#....","#....","#####"],
+"M":["#...#","##.##","#.#.#","#...#","#...#","#...#","#...#"],
+"N":["#...#","##..#","#.#.#","#..##","#...#","#...#","#...#"],
+"O":[".###.","#...#","#...#","#...#","#...#","#...#",".###."],
+"P":["####.","#...#","#...#","####.","#....","#....","#...."],
+"Q":[".###.","#...#","#...#","#...#","#.#.#","#..#.",".##.#"],
+"R":["####.","#...#","#...#","####.","#.#..","#..#.","#...#"],
+"S":[".####","#....","#....",".###.","....#","....#","####."],
+"T":["#####","..#..","..#..","..#..","..#..","..#..","..#.."],
+"U":["#...#","#...#","#...#","#...#","#...#","#...#",".###."],
+"V":["#...#","#...#","#...#","#...#","#...#",".#.#.","..#.."],
+"W":["#...#","#...#","#...#","#...#","#.#.#","##.##","#...#"],
+"X":["#...#","#...#",".#.#.","..#..",".#.#.","#...#","#...#"],
+"Y":["#...#","#...#",".#.#.","..#..","..#..","..#..","..#.."],
+"Z":["#####","....#","...#.","..#..",".#...","#....","#####"],
+"0":[".###.","#...#","#..##","#.#.#","##..#","#...#",".###."],
+"1":["..#..",".##..","..#..","..#..","..#..","..#..",".###."],
+"2":[".###.","#...#","....#","...#.","..#..",".#...","#####"],
+"3":["####.","....#","....#",".###.","....#","....#","####."],
+"4":["...#.","..##.",".#.#.","#..#.","#####","...#.","...#."],
+"5":["#####","#....","####.","....#","....#","#...#",".###."],
+"6":[".###.","#...#","#....","####.","#...#","#...#",".###."],
+"7":["#####","....#","...#.","..#..",".#...",".#...",".#..."],
+"8":[".###.","#...#","#...#",".###.","#...#","#...#",".###."],
+"9":[".###.","#...#","#...#",".####","....#","#...#",".###."]
+};
+
+function pixelText(text, scale, fill, outline, shadow){
+  text = String(text).toUpperCase();
+  const cols = text.length * 6 - 1, rows = 7, pad = 4;
+  const c = document.createElement("canvas");
+  c.width = (cols + pad) * scale; c.height = (rows + pad) * scale;
+  const g = c.getContext("2d");
+  const stamp = (dx, dy, color) => {
+    g.fillStyle = color;
+    for (let i = 0; i < text.length; i++){
+      const gl = F[text[i]] || F[" "];
+      for (let r = 0; r < rows; r++)
+        for (let k = 0; k < 5; k++)
+          if (gl[r][k] === "#") g.fillRect((i*6 + k + dx) * scale, (r + dy) * scale, scale, scale);
+    }
+  };
+  if (shadow) stamp(3, 3, shadow);
+  if (outline) for (const [dx,dy] of [[0,1],[2,1],[1,0],[1,2],[0,0],[2,0],[0,2],[2,2]]) stamp(dx, dy, outline);
+  stamp(1, 1, fill);
+  return c;
+}
+
+function renderHeadings(){
+  document.querySelectorAll(".pxt").forEach(el => {
+    const text = el.dataset.text;
+    const avail = (el.parentElement.clientWidth || 600) - 6;
+    const glyphW = text.length * 6 - 1 + 4;
+    const scale = Math.max(+el.dataset.min || 3, Math.min(+el.dataset.scale || 6, Math.floor(avail / glyphW)));
+    if (el._scale === scale) return;
+    el._scale = scale;
+    el.replaceChildren(pixelText(text, scale, "#191a2c", "#fffaef", "#ff6f4a"));
+    el.setAttribute("aria-label", text);
+  });
+}
+
+/* ---------- a calmer version of the main page's sky ---------- */
+const view = document.getElementById("sky"), vctx = view.getContext("2d");
+const buf = document.createElement("canvas"), ctx = buf.getContext("2d");
+const PAL = {
+  sky: [[31,143,216],[111,200,242],[201,237,255]],
+  cL: "#ffffff", cM: "#e8f5ff", cD: "#bcdcee",
+  hF: "#6fbe5e", hN: "#43913f", sun: "#fff5b8", glow: "#ffffff"
+};
+let W = 0, H = 0, PIX = 5, clouds = [], hills = [], trees = [], art = [];
+const rnd = (a,b) => a + Math.random() * (b - a);
+const rgbOf = c => `rgb(${c[0]|0},${c[1]|0},${c[2]|0})`;
+const mix = (a,b,t) => [a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t, a[2]+(b[2]-a[2])*t];
+const skyAt = t => t < 0.5 ? mix(PAL.sky[0], PAL.sky[1], t*2) : mix(PAL.sky[1], PAL.sky[2], (t-0.5)*2);
+
+function disc(g, cx, cy, r, color){
+  g.fillStyle = color;
+  for (let y = -r; y <= r; y++){
+    const w = Math.floor(Math.sqrt(Math.max(0, r*r - y*y)));
+    if (w >= 0) g.fillRect(cx - w, cy + y, w*2 + 1, 1);
+  }
+}
+
+function cloudSprite(scale){
+  const parts = []; let w = 0;
+  for (let i = 0, n = 3 + (Math.random()*3|0); i < n; i++){
+    const r = Math.round(rnd(3,6) * scale);
+    const x = Math.round(w + r * 0.75);
+    parts.push({ x, y: Math.round(rnd(-1,1) * scale), r });
+    w = x + r * 0.9;
+  }
+  const maxR = Math.max(...parts.map(p => p.r));
+  const h = maxR*2 + 4, wd = Math.ceil(w + maxR + 2), cy = maxR + 2;
+  const c = document.createElement("canvas");
+  c.width = wd; c.height = h;
+  const g = c.getContext("2d");
+  for (const p of parts) disc(g, p.x, cy + p.y, p.r, PAL.cL);
+  const px = g.getImageData(0,0,wd,h);
+  for (let x = 0; x < wd; x++){
+    let top = -1, bot = -1;
+    for (let y = 0; y < h; y++) if (px.data[(y*wd+x)*4+3] > 0){ if (top < 0) top = y; bot = y; }
+    if (top < 0) continue;
+    g.fillStyle = PAL.cL; g.fillRect(x, top, 1, bot-top+1);
+    g.fillStyle = PAL.cM; g.fillRect(x, bot - Math.max(2, ((bot-top)*0.32)|0), 1, Math.max(2, ((bot-top)*0.32)|0));
+    g.fillStyle = PAL.cD; g.fillRect(x, bot, 1, 1);
+  }
+  return c;
+}
+
+function ridge(baseY, amp, seed){
+  const pts = [];
+  for (let x = 0; x <= W + 3; x += 3){
+    const n = Math.sin((x+seed)*0.021)*0.6 + Math.sin((x+seed)*0.007)*0.4;
+    pts.push({ x, y: Math.round(baseY - n*amp) });
+  }
+  return pts;
+}
+
+function resize(){
+  const dw = Math.max(1, innerWidth), dh = Math.max(1, innerHeight);
+  PIX = dw < 640 ? 4 : 5;
+  W = Math.max(2, Math.ceil(dw/PIX)); H = Math.max(2, Math.ceil(dh/PIX));
+  buf.width = W; buf.height = H;
+  view.width = dw; view.height = dh;
+  view.style.width = dw + "px"; view.style.height = dh + "px";
+  ctx.imageSmoothingEnabled = false; vctx.imageSmoothingEnabled = false;
+
+  art = [cloudSprite(0.8), cloudSprite(1.1), cloudSprite(1.5), cloudSprite(1.2), cloudSprite(0.9)];
+  clouds = art.map((a, i) => ({ art: i, x: rnd(-40, W), y: Math.round(rnd(0.06, 0.55) * H), sp: 0.05 + i*0.03 }));
+  hills = [ridge(H*0.93, H*0.045, 120), ridge(H*0.985, H*0.035, 900)];
+  trees = [];
+  for (let i = 0; i < Math.max(4, W/40|0); i++){
+    const x = Math.round(rnd(0, W));
+    const seg = hills[1][Math.min(hills[1].length-1, Math.round(x/3))];
+    trees.push({ x, y: seg ? seg.y : H, h: Math.round(rnd(5,9)) });
+  }
+  paintSky();
+  renderHeadings();
+}
+
+let skyCache = document.createElement("canvas");
+function paintSky(){
+  skyCache.width = W; skyCache.height = H;
+  const g = skyCache.getContext("2d"), N = 16;
+  const band = i => skyAt(Math.min(1, (i + 0.5)/N));
+  for (let i = 0; i < N; i++){
+    const y0 = Math.floor(i*H/N), y1 = Math.floor((i+1)*H/N);
+    g.fillStyle = rgbOf(band(i)); g.fillRect(0, y0, W, y1-y0);
+  }
+  for (let i = 1; i < N; i++){
+    const y = Math.floor(i*H/N);
+    g.fillStyle = rgbOf(band(i));
+    for (let x = 0; x < W; x += 2) g.fillRect(x, y-1, 1, 1);
+    g.fillStyle = rgbOf(band(i-1));
+    for (let x = 1; x < W; x += 2) g.fillRect(x, y, 1, 1);
+  }
+}
+
+function frame(){
+  ctx.clearRect(0,0,W,H);
+  ctx.drawImage(skyCache, 0, 0);
+
+  const sx = Math.round(W * 0.82), sy = Math.round(H * 0.18), r = Math.round(Math.min(W,H)*0.05) + 4;
+  ctx.globalAlpha = .35; disc(ctx, sx, sy, r+5, PAL.glow);
+  ctx.globalAlpha = 1;   disc(ctx, sx, sy, r, PAL.sun);
+
+  for (const c of clouds){
+    if (!REDUCED) c.x += c.sp;
+    const a = art[c.art];
+    if (c.x > W + a.width) c.x = -a.width - rnd(0, 60);
+    ctx.drawImage(a, Math.round(c.x), c.y);
+  }
+
+  ctx.fillStyle = PAL.hF;
+  for (const p of hills[0]) ctx.fillRect(p.x, p.y, 3, H - p.y);
+  ctx.fillStyle = "#2c5c2a";
+  for (const t of trees){
+    const ty = t.y - t.h;
+    ctx.fillRect(t.x, ty + t.h - 1, 1, 2);
+    for (let i = 0; i < t.h; i++){
+      const w = 1 + Math.round((i/t.h) * 3);
+      ctx.fillRect(t.x - (w>>1), ty + i, w, 1);
+    }
+  }
+  ctx.fillStyle = PAL.hN;
+  for (const p of hills[1]) ctx.fillRect(p.x, p.y, 3, H - p.y);
+
+  vctx.drawImage(buf, 0, 0, W, H, 0, 0, view.width, view.height);
+  requestAnimationFrame(frame);
+}
+
+/* ---------- the list ---------- */
+const grid = document.getElementById("grid");
+const filters = document.getElementById("filters");
+const el = (tag, cls, text) => {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+};
+const niceDate = iso => new Date(iso + "T00:00:00").toLocaleDateString("en-US", { month: "short", year: "numeric" });
+
+function card(p){
+  const c = el("article", "panel card rv");
+  c.dataset.langs = p.langs.join("|");
+
+  const top = el("div", "top");
+  top.append(el("h2", null, p.name));
+  if (p.stars > 0) top.append(el("span", "star", "★ " + p.stars));
+  c.append(top);
+
+  const tags = el("div", "tags");
+  if (FEATURED[p.name]) tags.append(el("span", "tag feat", "Featured"));
+  p.langs.forEach(l => tags.append(el("span", "tag lang", l)));
+  if (p.empty) tags.append(el("span", "tag wip", "Empty repo"));
+  if (tags.childElementCount) c.append(tags);
+
+  c.append(p.blurb
+    ? el("p", "blurb", p.blurb)
+    : el("p", "blurb none", "No description on GitHub yet."));
+
+  const foot = el("div", "foot");
+  foot.append(el("span", "when", "Updated " + niceDate(p.updated)));
+  const repo = el("a", "link", "Code");
+  repo.href = p.url; repo.target = "_blank"; repo.rel = "noopener";
+  repo.setAttribute("aria-label", `${p.name} source code on GitHub`);
+  foot.append(repo);
+  if (p.home){
+    const live = el("a", "link ghost", "Live");
+    live.href = p.home; live.target = "_blank"; live.rel = "noopener";
+    live.setAttribute("aria-label", `${p.name} live site`);
+    foot.append(live);
+  }
+  c.append(foot);
+  return c;
+}
+
+function build(){
+  const langs = new Map();
+  PROJECTS.forEach(p => p.langs.forEach(l => langs.set(l, (langs.get(l) || 0) + 1)));
+  const top = [...langs.entries()].sort((a,b) => b[1]-a[1]).filter(([,n]) => n > 1).map(([l]) => l);
+
+  const mk = (label, value, on) => {
+    const b = el("button", null, label);
+    b.type = "button";
+    b.dataset.lang = value;
+    b.setAttribute("aria-pressed", String(on));
+    return b;
+  };
+  filters.append(mk(`All (${PROJECTS.length})`, "", true), ...top.map(l => mk(l, l, false)));
+  const count = el("span", "count", "");
+  filters.append(count);
+
+  PROJECTS.forEach(p => grid.append(card(p)));
+
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }
+  }), { threshold: .1 });
+  grid.querySelectorAll(".rv").forEach(n => io.observe(n));
+
+  function apply(lang){
+    let shown = 0;
+    [...grid.children].forEach((c, i) => {
+      const hit = !lang || c.dataset.langs.split("|").includes(lang);
+      c.hidden = !hit;
+      if (hit){ shown++; c.classList.add("in"); }
+    });
+    count.textContent = `${shown} shown`;
+    [...filters.querySelectorAll("button")].forEach(b =>
+      b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+  }
+
+  filters.addEventListener("click", e => {
+    const b = e.target.closest("button");
+    if (b) apply(b.dataset.lang);
+  });
+  count.textContent = `${PROJECTS.length} shown`;
+}
+
+/* When this page is viewed as a published artifact, index.html isn't there —
+   send those links to the artifact instead. */
+const HOME_ARTIFACT = "https://claude.ai/code/artifact/fddda306-8995-4b1a-a06e-a714a6746836";
+if (location.hostname.endsWith("claude.ai")){
+  document.querySelectorAll('a[href="index.html"]').forEach(a => { a.href = HOME_ARTIFACT; });
+}
+
+let rt;
+addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(resize, 120); });
+build();
+resize();
+requestAnimationFrame(frame);
+})();
+</script>
