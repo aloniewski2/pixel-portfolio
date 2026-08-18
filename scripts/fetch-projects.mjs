@@ -119,14 +119,34 @@ const a = page.indexOf(START), b = page.indexOf(END);
 if (a < 0 || b < 0) throw new Error(`Couldn't find ${START}/${END} markers in projects.html`);
 await writeFile(PAGE, page.slice(0, a) + block + page.slice(b + END.length), "utf8");
 
-// Keep the "N more on GitHub" line on the main page honest.
+// Keep the "N more on GitHub" line on the main page honest, and hand the
+// résumé assistant the same repo list so it can talk about every project
+// rather than only the three written up by hand.
 const FEATURED = ["subscription-saver", "solveit-ai-v1", "DineValley"];
 const index = join(ROOT, "index.html");
 const home = await readFile(index, "utf8").catch(() => null);
 if (home) {
   const rest = projects.filter((p) => !FEATURED.includes(p.name)).length;
-  const patched = home.replace(/(<b id="repoCount">)\d+(<\/b>)/, `$1${rest}$2`);
+  let patched = home.replace(/(<b id="repoCount">)\d+(<\/b>)/, `$1${rest}$2`);
+
+  const forBot = projects.map((p) => ({
+    name: p.name,
+    blurb: p.blurb,
+    langs: p.langs,
+    url: p.url,
+    home: p.home,
+    updated: p.updated,
+    featured: FEATURED.includes(p.name),
+  }));
+  const OPEN = '<script type="application/json" id="repo-data">';
+  const CLOSE = "</scr" + "ipt>";
+  const a = patched.indexOf(OPEN);
+  if (a < 0) throw new Error("Couldn't find the #repo-data block in index.html");
+  const b = patched.indexOf(CLOSE, a);
+  patched = patched.slice(0, a + OPEN.length) + "\n" + JSON.stringify(forBot) + "\n" + patched.slice(b);
+
   if (patched !== home) await writeFile(index, patched, "utf8");
+  console.log(`\n  assistant repo index: ${forBot.length} repos written into index.html`);
 }
 
 const bare = projects.filter((p) => !p.blurb).map((p) => p.name);

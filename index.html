@@ -796,6 +796,12 @@ section{padding-top:clamp(46px,7vw,86px);scroll-margin-top:70px}
   <span class="sr-only">Ask the resume assistant about Andrew</span>
 </button>
 
+<!-- Every public repo, written here by scripts/fetch-projects.mjs so the
+     assistant can answer about projects that have no hand-written card. -->
+<script type="application/json" id="repo-data">
+[{"name":"pixel-portfolio","blurb":"Interactive pixel-art portfolio — a canvas sky that moves through the day as you scroll, and a résumé assistant that runs entirely in the browser.","langs":["HTML","JavaScript"],"url":"https://github.com/aloniewski2/pixel-portfolio","home":null,"updated":"2026-08-18","featured":false},{"name":"subscription-saver","blurb":"LeakGuard — privacy-first subscription leak detector. Analyses bank statements entirely in the browser (zero backend) to surface recurring charges, duplicate services and hidden price rises, scored 0–100. React, TypeScript,…","langs":["TypeScript"],"url":"https://github.com/aloniewski2/subscription-saver","home":null,"updated":"2026-08-17","featured":true},{"name":"DineValley","blurb":"Restaurant recommendation web app for the Lehigh Valley — React, TypeScript and Tailwind, with location and preference filters over the Google Places API.","langs":["TypeScript","JavaScript"],"url":"https://github.com/aloniewski2/DineValley","home":"https://dinevalley-frontend.onrender.com","updated":"2026-08-17","featured":true},{"name":"Stock_Predictor","blurb":"Web app for managing a stock portfolio and predicting future prices. Python and HTML.","langs":["HTML","Python"],"url":"https://github.com/aloniewski2/Stock_Predictor","home":null,"updated":"2026-08-17","featured":false},{"name":"aloniewski2.github.io-","blurb":"Personal portfolio site — skills, projects, achievements and education.","langs":["HTML"],"url":"https://github.com/aloniewski2/aloniewski2.github.io-","home":null,"updated":"2026-08-17","featured":false},{"name":"CryptoArmor","blurb":"Pre-transaction risk intelligence platform for Web3 security. TypeScript.","langs":["TypeScript"],"url":"https://github.com/aloniewski2/CryptoArmor","home":null,"updated":"2026-08-17","featured":false},{"name":"ExchangeExplorer","blurb":"Cryptocurrency exchange simulation and end-to-end testing framework — a visual, real-time demonstration of trading operations. React, TypeScript and Supabase.","langs":["TypeScript"],"url":"https://github.com/aloniewski2/ExchangeExplorer","home":null,"updated":"2026-08-17","featured":false},{"name":"MYSQL-CRUD-Project","blurb":"Node/Express REST API over MySQL — full CRUD with schema and seed SQL, routed queries and environment-based config.","langs":["JavaScript"],"url":"https://github.com/aloniewski2/MYSQL-CRUD-Project","home":null,"updated":"2026-08-17","featured":false},{"name":"PartyAux","blurb":"Collaborative party queue — guests join a room by code and add tracks to a shared Spotify queue. Next.js, Supabase and Google Gemini.","langs":["TypeScript","PLpgSQL"],"url":"https://github.com/aloniewski2/PartyAux","home":null,"updated":"2026-08-17","featured":false},{"name":"MyCRM","blurb":"Personal CRM that tracks contacts and scores relationship warmth, keeping itself current on a cron. React + Vite front end, Express backend, with Gmail, IMAP, Notion, Slack, Claude and Ollama integrations.","langs":["JavaScript"],"url":"https://github.com/aloniewski2/MyCRM","home":null,"updated":"2026-08-17","featured":false},{"name":"Datadrop","blurb":"DataDropAI — drop in a CSV or Google Sheet, ask a question in plain English, and get a chart back in seconds. React, D3, Recharts and PapaParse; no setup, no code.","langs":["JavaScript"],"url":"https://github.com/aloniewski2/Datadrop","home":null,"updated":"2026-08-17","featured":false},{"name":"1v1club","blurb":"Peer-to-peer 1v1 skill challenges for casual games. Friends challenge each other (basketball, gaming, chess, pool…), play, declare a winner, and the winner earns ranking points on a friends leaderboard. (Formerly \"Wagerly\" — the…","langs":["TypeScript","HTML"],"url":"https://github.com/aloniewski2/1v1club","home":"http://1v1club.com/","updated":"2026-07-07","featured":false},{"name":"JoblyAI","blurb":"AI-powered job application tracker that helps you manage your entire job search in one place. Track applications across every stage, match your resume to job descriptions, generate cover letters and tailored resumes, prep for…","langs":["TypeScript","JavaScript"],"url":"https://github.com/aloniewski2/JoblyAI","home":null,"updated":"2026-03-28","featured":false},{"name":"solveit-ai-v1","blurb":"An AI-powered problem-solving app that diagnoses real-world issues from photos or text descriptions. Get step-by-step solutions, visual guides, cost estimates, safety warnings, and connect with local professionals.","langs":["TypeScript"],"url":"https://github.com/aloniewski2/solveit-ai-v1","home":null,"updated":"2025-12-18","featured":true},{"name":"MealMatch","blurb":"MealMatch is a full-stack recipe finder that merges TheMealDB and Spoonacular results, scores them by how closely they match your pantry, and augments the details with USDA nutrition data. Search by ingredients, filter by cuisine…","langs":["JavaScript"],"url":"https://github.com/aloniewski2/MealMatch","home":null,"updated":"2025-11-19","featured":false},{"name":"CampusFi","blurb":"An app that helps students see where money goes, plan cashflow around class life, and try crypto safely. Includes an AI engine that predicts the most sought‑after spend categories on campus and flags trending crypto themes—so…","langs":[],"url":"https://github.com/aloniewski2/CampusFi","home":null,"updated":"2025-11-19","featured":false},{"name":"DineValley-test","blurb":"Restaurant Recommendator web app for Lehigh Valley, PA — location & preference-based filters with ranked recommendations.","langs":["TypeScript","CSS"],"url":"https://github.com/aloniewski2/DineValley-test","home":null,"updated":"2025-09-22","featured":false},{"name":"SupplyChainAI","blurb":"Supply Chain Assistant: Full-stack web app for real-time supply chain analytics. FastAPI backend, Dash frontend, ML for forecasting and optimization. Integrates with simulated real-time data. Tech: Python, Pandas, NumPy,…","langs":["Python","HTML"],"url":"https://github.com/aloniewski2/SupplyChainAI","home":null,"updated":"2024-12-05","featured":false}]
+</script>
+
 <script>
 (() => {
 "use strict";
@@ -1806,6 +1812,25 @@ function buildIndex(){
     });
   });
 
+  // Every other public repo, so "what else has he built" has an answer. The
+  // three with hand-written cards above are skipped — those entries are richer.
+  const repoEl = document.getElementById("repo-data");
+  if (repoEl){
+    let repos = [];
+    try { repos = JSON.parse(repoEl.textContent) || []; } catch { repos = []; }
+    for (const r of repos){
+      if (r.featured) continue;
+      out.push({
+        kind: "repo",
+        name: r.name,
+        when: r.updated || "",
+        bullets: r.blurb ? [r.blurb] : [],
+        tags: r.langs || [],
+        link: r.home || r.url
+      });
+    }
+  }
+
   out.push({
     kind: "education",
     name: "Muhlenberg College",
@@ -2011,6 +2036,13 @@ function speakEntry(e, ts){
   if (e.kind === "job") return speakJob(e, ts);
   if (e.kind === "project") return speakProject(e, ts);
   if (e.kind === "skills") return [`Under ${lower(e.name)} he lists ${e.items.join(", ")}.`];
+  if (e.kind === "repo"){
+    const msgs = [`${e.name} is one of his GitHub projects${e.tags.length ? ` — ${e.tags.slice(0, 3).join(", ")}` : ""}.`];
+    if (e.bullets[0]) msgs.push(`${condense(e.bullets[0])}.`);
+    else msgs.push(`There's no write-up on it yet, so all I have is the code itself.`);
+    if (e.link) msgs.push(shortUrl(e.link));
+    return msgs;
+  }
   // These two are written out in full, so nothing is left to "tell me more" about.
   const markComplete = () => { setTopic(e); e.bullets.forEach((_, i) => chat.topic.seen.add(i)); };
   if (e.kind === "education"){
@@ -2064,10 +2096,11 @@ function followUps(){
   if (t?.skill) return ["Where has he used it?", "What else does he know?", "Why hire him?"];
   const k = t?.entry?.kind;
   if (k === "job") return ["What else did he do there?", "What was the stack?", "Where else has he worked?"];
-  if (k === "project") return ["Tell me more", "Show me another project", "What's he building now?"];
+  if (k === "project") return ["Tell me more", "What else has he built?", "What was it built with?"];
+  if (k === "repo") return ["What else has he built?", "Tell me more", "Why hire him?"];
   if (k === "education") return ["Tell me about his wrestling", "What's his GPA?", "Why hire him?"];
   if (k === "athletics") return ["Where does he study?", "Why hire him?", "What has he shipped?"];
-  return ["What has he shipped at Noteefy?", "Does he know Docker?", "Tell me about LeakGuard", "Why hire him?"];
+  return ["What has he shipped at Noteefy?", "Does he know Docker?", "What else has he built?", "Why hire him?"];
 }
 
 const SMALL_TALK = [
@@ -2109,6 +2142,18 @@ const INTENTS = [
       "He's also a CS and Finance double major at Muhlenberg, GPA 3.7, graduating May 2027.",
       "Outside of that he captains the NCAA Division III wrestling team."
     ] },
+
+  { re: /what else has he (built|made|worked on|shipped)|other (projects|repos|work)|all (of )?(his )?(projects|repos)|everything he('s| has) (built|made)|github repos/i,
+    say: () => {
+      const repos = listOf("repo");
+      if (!repos.length) return ["The three on this page are all I have written up."];
+      chat.topic = null;
+      const names = repos.slice(0, 6).map(r => `${r.name}${r.tags[0] ? ` (${r.tags[0]})` : ""}`).join("\n");
+      return [`Beyond the three written up here, there are ${repos.length} more public repos.`,
+              names,
+              repos.length > 6 ? "Say a name and I'll tell you about it — the full list is on the projects page."
+                               : "Say a name and I'll tell you about it."];
+    } },
 
   { re: /what (projects|has he built)|list.*projects|side projects|portfolio pieces|show me.*projects|another project/i,
     say: () => {
