@@ -396,6 +396,49 @@ section{padding-top:clamp(46px,7vw,86px);scroll-margin-top:70px}
 .more b{color:var(--ink)}
 .norepo{font-size:13px;color:var(--ink-soft);border-top:2px dashed var(--ink-soft);padding-top:12px}
 
+/* ---------- live project demos ---------- */
+.demos{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:22px}
+.demo{display:flex;flex-direction:column;padding:0;overflow:hidden}
+.demo .stage{
+  position:relative;aspect-ratio:16/10;overflow:hidden;
+  background:#0f1526;border-bottom:3px solid var(--line);
+}
+.demo .stage iframe{
+  position:absolute;inset:0;width:1280px;height:800px;border:0;
+  transform-origin:0 0;pointer-events:none;background:#fff;
+}
+.demo.interactive .stage iframe{pointer-events:auto}
+.demo .stage .loading{
+  position:absolute;inset:0;display:grid;place-items:center;
+  color:#7f8db0;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+}
+/* Sits over the frame until you ask to interact, so scrolling past a demo
+   never gets captured by it. */
+.demo .veil{
+  /* Above the frame: the iframe is appended after this element, so without a
+     stacking order it paints over the veil and the affordance is unclickable. */
+  position:absolute;inset:0;z-index:3;
+  display:grid;place-items:end center;padding-bottom:12px;
+  cursor:pointer;background:linear-gradient(180deg,transparent 60%,rgba(15,21,38,.55));
+}
+.demo.interactive .veil{display:none}
+.demo .veil span{
+  background:var(--ink);color:var(--panel);border:2px solid var(--line);
+  padding:5px 12px;font-size:11px;font-weight:bold;letter-spacing:.12em;text-transform:uppercase;
+}
+.demo .veil:hover span{background:var(--accent)}
+.demo .tagline{
+  position:absolute;top:8px;left:8px;z-index:2;background:var(--green);color:#fff;
+  border:2px solid var(--line);padding:2px 7px;
+  font-size:10px;font-weight:bold;letter-spacing:.12em;text-transform:uppercase;
+}
+.demo.interactive .tagline{background:var(--gold);color:var(--ink)}
+.demo .meat{padding:16px 18px 18px;display:flex;flex-direction:column;gap:9px;flex:1}
+.demo h3{font-size:16px}
+.demo p{font-size:14px;flex:1}
+.demo .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+@media (max-width:640px){ .demos{grid-template-columns:1fr} }
+
 /* ---------- skills ---------- */
 .skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
 .skills .grp h3{
@@ -600,54 +643,7 @@ html.still .rv{opacity:1 !important;transform:none !important;transition:none !i
       <span class="rule"></span>
     </div>
 
-    <div class="cards">
-      <article class="card panel rv">
-        <div class="art"><canvas data-sprite="leak" width="32" height="32" aria-hidden="true"></canvas></div>
-        <h3>LeakGuard</h3>
-        <div class="when">Subscription Leak Detector · Feb 2026</div>
-        <ul>
-          <li>Privacy-first web app that analyzes bank statements entirely in-browser (zero backend) to detect recurring charges, duplicate services, and hidden price increases.</li>
-          <li>Detection engine with 150+ merchant patterns, fuzzy matching, and recurrence heuristics, surfacing results in a 0–100 efficiency score and insights dashboard.</li>
-        </ul>
-        <div class="stack">
-          <span class="tag">React</span><span class="tag">TypeScript</span><span class="tag">Tailwind</span><span class="tag">Recharts</span><span class="tag">PapaParse</span>
-        </div>
-        <a class="btn" href="https://github.com/aloniewski2/subscription-saver" target="_blank" rel="noopener">View source</a>
-      </article>
-
-      <article class="card panel rv">
-        <div class="art"><canvas data-sprite="ai" width="32" height="32" aria-hidden="true"></canvas></div>
-        <h3>SolveIT AI</h3>
-        <div class="when">Full-stack AI diagnosis app · Oct 2025</div>
-        <ul>
-          <li>React + TypeScript app on Supabase Edge Functions (Deno), integrating Google Gemini for multimodal image/text analysis with confidence scoring and dynamic follow-up questions.</li>
-          <li>Real-time web crawling via the Firecrawl API for verified repair guides, plus native mobile features with Capacitor (camera, geolocation) for iOS/Android deployment.</li>
-        </ul>
-        <div class="stack">
-          <span class="tag">React</span><span class="tag">Supabase</span><span class="tag">Deno</span><span class="tag">Gemini</span><span class="tag">Capacitor</span>
-        </div>
-        <a class="btn" href="https://github.com/aloniewski2/solveit-ai-v1" target="_blank" rel="noopener">View source</a>
-      </article>
-
-      <article class="card panel rv">
-        <div class="art"><canvas data-sprite="dine" width="32" height="32" aria-hidden="true"></canvas></div>
-        <h3>DineValley</h3>
-        <div class="when">Restaurant recommendation app · Nov 2025</div>
-        <ul>
-          <li>React + TypeScript frontend with a Node.js/Express backend, integrating the Google Places API for real-time search, filtering, and geolocation results.</li>
-          <li>Custom filtering logic and backend endpoints that secure API keys, with CI/CD via GitHub Actions.</li>
-        </ul>
-        <div class="stack">
-          <span class="tag">React</span><span class="tag">Node.js</span><span class="tag">Express</span><span class="tag">Google Places</span><span class="tag">GH Actions</span>
-        </div>
-        <a class="btn" href="https://dinevalley-frontend.onrender.com" target="_blank" rel="noopener">Live demo</a>
-      </article>
-    </div>
-
-    <div class="more rv">
-      <p>Three write-ups here — there are <b id="repoCount">16</b> more on GitHub.</p>
-      <a class="btn primary" href="projects.html" id="allProjects">View all projects &#8594;</a>
-    </div>
+    <div class="demos" id="demoGrid"></div>
   </section>
 
   <!-- ============ SKILLS ============ -->
@@ -2569,6 +2565,153 @@ chat.chips.addEventListener("click", e => {
   const btn = e.target.closest("button");
   if (btn) ask(btn.textContent.trim());
 });
+
+/* =========================================================
+   Live project demos — every working project, running in
+   the page. Frames load themselves as you scroll near them,
+   so a visitor never has to ask for the demo; they only opt
+   in to *interacting*, which keeps scroll from being eaten.
+   ========================================================= */
+(() => {
+  const grid = document.getElementById("demoGrid");
+  if (!grid) return;
+
+  const island = document.getElementById("repo-data");
+  let repos = [];
+  try { repos = JSON.parse(island.textContent); } catch { return; }
+
+  // Friendlier names than the repo slugs, and the order to show them in.
+  const SHOW = [
+    ["subscription-saver", "LeakGuard"],
+    ["Datadrop",           "DataDropAI"],
+    ["DineValley",         "DineValley"],
+    ["1v1club",            "1v1 Club"],
+    ["legacy-os",          "Legacy OS"],
+  ];
+
+  const byName = new Map(repos.map(r => [r.name, r]));
+  const cards = [];
+
+  for (const [slug, label] of SHOW) {
+    const r = byName.get(slug);
+    if (!r?.home) continue;
+
+    // http can't be framed from an https page; the site redirects anyway.
+    const src = r.home.replace(/^http:\/\//, "https://");
+
+    const card = document.createElement("article");
+    card.className = "demo panel rv";
+    card.innerHTML =
+      `<div class="stage">` +
+        `<span class="tagline">Live</span>` +
+        `<div class="loading">loading demo\u2026</div>` +
+        `<div class="veil" role="button" tabindex="0" aria-label="Interact with the ${label} demo">` +
+          `<span>\u25B6 Click to try it</span></div>` +
+      `</div>` +
+      `<div class="meat">` +
+        `<h3></h3><p></p>` +
+        `<div class="row"></div>` +
+      `</div>`;
+
+    card.querySelector("h3").textContent = label;
+    card.querySelector("p").textContent = r.blurb || "";
+
+    const row = card.querySelector(".row");
+    for (const l of (r.langs || []).slice(0, 3)) {
+      const t = document.createElement("span");
+      t.className = "tag";
+      t.textContent = l;
+      row.append(t);
+    }
+    const open = document.createElement("a");
+    open.className = "btn primary";
+    open.href = src; open.target = "_blank"; open.rel = "noopener";
+    open.textContent = "Open \u2197";
+    const code = document.createElement("a");
+    code.className = "btn";
+    code.href = r.url; code.target = "_blank"; code.rel = "noopener";
+    code.textContent = "Code";
+    row.append(open, code);
+
+    const stage = card.querySelector(".stage");
+    const veil = card.querySelector(".veil");
+    const activate = () => {
+      card.classList.add("interactive");
+      card.querySelector(".tagline").textContent = "Interactive";
+    };
+    veil.addEventListener("click", activate);
+    veil.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(); }
+    });
+    // Releasing on exit means a demo can never trap the page scroll.
+    card.addEventListener("pointerleave", () => {
+      card.classList.remove("interactive");
+      card.querySelector(".tagline").textContent = "Live";
+    });
+
+    grid.append(card);
+    cards.push({ card, stage, src, label });
+  }
+
+  // Load a frame slightly before it comes into view, one at a time, so the
+  // landing page never pulls five third-party apps at once.
+  const queue = [];
+  let loading = false;
+  const pump = () => {
+    if (loading || !queue.length) return;
+    loading = true;
+    const { stage, src, label } = queue.shift();
+    const frame = document.createElement("iframe");
+    frame.src = src;
+    frame.title = label + " live demo";
+    frame.loading = "lazy";
+    frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-popups allow-forms");
+    frame.addEventListener("load", () => {
+      stage.querySelector(".loading")?.remove();
+      loading = false;
+      setTimeout(pump, 250);
+    }, { once: true });
+    // Never let one slow site block the rest of the queue.
+    setTimeout(() => { if (loading) { loading = false; pump(); } }, 6000);
+    stage.append(frame);
+    const fit = () => { frame.style.transform = `scale(${stage.clientWidth / 1280})`; };
+    fit();
+    new ResizeObserver(fit).observe(stage);
+  };
+
+  const io = new IntersectionObserver((entries, obs) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      const hit = cards.find(c => c.card === e.target);
+      if (hit && !hit.queued) { hit.queued = true; queue.push(hit); pump(); }
+      obs.unobserve(e.target);
+    }
+  }, { rootMargin: "300px 0px" });
+
+  cards.forEach(c => io.observe(c.card));
+
+  /* IntersectionObserver needs the document to be rendering. A tab that loads
+     in the background — or any hidden embedding context — may never deliver a
+     callback, which would leave the demos permanently unloaded. Sweep once on
+     geometry as a backstop, and again when the page becomes visible. */
+  const sweep = () => {
+    for (const c of cards) {
+      if (c.queued) continue;
+      const box = c.card.getBoundingClientRect();
+      if (box.top < innerHeight + 300 && box.bottom > -300) {
+        c.queued = true;
+        io.unobserve(c.card);
+        queue.push(c);
+        pump();
+      }
+    }
+  };
+  addEventListener("scroll", sweep, { passive: true });
+  addEventListener("visibilitychange", sweep);
+  setTimeout(sweep, 400);
+
+  document.querySelectorAll(".demo.rv").forEach(el => el.classList.add("in"));
+})();
 
 /* =========================================================
    8. PAGE BEHAVIOUR — reveals, counters, nav, GPA meter
