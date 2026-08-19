@@ -204,7 +204,78 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /* Pulled from the GitHub API by scripts/fetch-projects.mjs — re-run it to refresh. */
 /* PROJECTS:START */
-let PROJECTS = [
+const PROJECTS = [
+ {
+  "name": "legacy-os",
+  "blurb": "A desktop operating system that runs in a browser tab — window manager, taskbar, terminal, Snake and Paint, in one dependency-free HTML file.",
+  "langs": [],
+  "stars": 0,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/legacy-os",
+  "home": "https://aloniewski2.github.io/legacy-os/",
+  "updated": "2026-08-19",
+  "created": "2026-08-19",
+  "empty": true
+ },
+ {
+  "name": "JoblyAI",
+  "blurb": "AI-powered job application tracker that helps you manage your entire job search in one place. Track applications across every stage, match your resume to job descriptions, generate cover letters and tailored resumes, prep for…",
+  "langs": [
+   "TypeScript",
+   "JavaScript"
+  ],
+  "stars": 0,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/JoblyAI",
+  "home": null,
+  "updated": "2026-08-19",
+  "created": "2026-03-28",
+  "empty": false
+ },
+ {
+  "name": "DineValley",
+  "blurb": "Restaurant recommendation web app for the Lehigh Valley — React, TypeScript and Tailwind, with location and preference filters over the Google Places API.",
+  "langs": [
+   "TypeScript",
+   "JavaScript"
+  ],
+  "stars": 3,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/DineValley",
+  "home": "https://dinevalley-frontend.onrender.com",
+  "updated": "2026-08-19",
+  "created": "2025-09-05",
+  "empty": false
+ },
+ {
+  "name": "MyCRM",
+  "blurb": "Personal CRM that tracks contacts and scores relationship warmth, keeping itself current on a cron. React + Vite front end, Express backend, with Gmail, IMAP, Notion, Slack, Claude and Ollama integrations.",
+  "langs": [
+   "JavaScript"
+  ],
+  "stars": 0,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/MyCRM",
+  "home": null,
+  "updated": "2026-08-19",
+  "created": "2026-03-24",
+  "empty": false
+ },
+ {
+  "name": "pixel-portfolio",
+  "blurb": "Interactive pixel-art portfolio — a canvas sky that moves through the day as you scroll, and a résumé assistant that runs entirely in the browser.",
+  "langs": [
+   "HTML",
+   "JavaScript"
+  ],
+  "stars": 0,
+  "topics": [],
+  "url": "https://github.com/aloniewski2/pixel-portfolio",
+  "home": "https://aloniewski2.github.io/pixel-portfolio/",
+  "updated": "2026-08-19",
+  "created": "2026-08-18",
+  "empty": false
+ },
  {
   "name": "subscription-saver",
   "blurb": "LeakGuard — privacy-first subscription leak detector. Analyses bank statements entirely in the browser (zero backend) to surface recurring charges, duplicate services and hidden price rises, scored 0–100. React, TypeScript,…",
@@ -226,21 +297,6 @@ let PROJECTS = [
   "empty": false
  },
  {
-  "name": "pixel-portfolio",
-  "blurb": "Interactive pixel-art portfolio — a canvas sky that moves through the day as you scroll, and a résumé assistant that runs entirely in the browser.",
-  "langs": [
-   "HTML",
-   "JavaScript"
-  ],
-  "stars": 0,
-  "topics": [],
-  "url": "https://github.com/aloniewski2/pixel-portfolio",
-  "home": "https://aloniewski2.github.io/pixel-portfolio/",
-  "updated": "2026-08-18",
-  "created": "2026-08-18",
-  "empty": false
- },
- {
   "name": "Datadrop",
   "blurb": "DataDropAI — drop in a CSV or Google Sheet, ask a question in plain English, and get a chart back in seconds. React, D3, Recharts and PapaParse; no setup, no code.",
   "langs": [
@@ -252,35 +308,6 @@ let PROJECTS = [
   "home": "https://aloniewski2.github.io/Datadrop/",
   "updated": "2026-08-18",
   "created": "2026-03-28",
-  "empty": false
- },
- {
-  "name": "DineValley",
-  "blurb": "Restaurant recommendation web app for the Lehigh Valley — React, TypeScript and Tailwind, with location and preference filters over the Google Places API.",
-  "langs": [
-   "TypeScript",
-   "JavaScript"
-  ],
-  "stars": 3,
-  "topics": [],
-  "url": "https://github.com/aloniewski2/DineValley",
-  "home": "https://dinevalley-frontend.onrender.com",
-  "updated": "2026-08-18",
-  "created": "2025-09-05",
-  "empty": false
- },
- {
-  "name": "MyCRM",
-  "blurb": "Personal CRM that tracks contacts and scores relationship warmth, keeping itself current on a cron. React + Vite front end, Express backend, with Gmail, IMAP, Notion, Slack, Claude and Ollama integrations.",
-  "langs": [
-   "JavaScript"
-  ],
-  "stars": 0,
-  "topics": [],
-  "url": "https://github.com/aloniewski2/MyCRM",
-  "home": null,
-  "updated": "2026-08-18",
-  "created": "2026-03-24",
   "empty": false
  },
  {
@@ -311,18 +338,17 @@ let PROJECTS = [
   "empty": false
  },
  {
-  "name": "JoblyAI",
-  "blurb": "AI-powered job application tracker that helps you manage your entire job search in one place. Track applications across every stage, match your resume to job descriptions, generate cover letters and tailored resumes, prep for…",
+  "name": "aloniewski2.github.io-",
+  "blurb": "Personal portfolio site — skills, projects, achievements and education.",
   "langs": [
-   "TypeScript",
-   "JavaScript"
+   "HTML"
   ],
-  "stars": 0,
+  "stars": 1,
   "topics": [],
-  "url": "https://github.com/aloniewski2/JoblyAI",
+  "url": "https://github.com/aloniewski2/aloniewski2.github.io-",
   "home": null,
-  "updated": "2026-08-18",
-  "created": "2026-03-28",
+  "updated": "2026-08-17",
+  "created": "2024-11-17",
   "empty": false
  },
  {
@@ -338,20 +364,6 @@ let PROJECTS = [
   "home": null,
   "updated": "2026-08-17",
   "created": "2024-11-19",
-  "empty": false
- },
- {
-  "name": "aloniewski2.github.io-",
-  "blurb": "Personal portfolio site — skills, projects, achievements and education.",
-  "langs": [
-   "HTML"
-  ],
-  "stars": 1,
-  "topics": [],
-  "url": "https://github.com/aloniewski2/aloniewski2.github.io-",
-  "home": null,
-  "updated": "2026-08-17",
-  "created": "2024-11-17",
   "empty": false
  },
  {
