@@ -140,6 +140,7 @@ main{max-width:1040px;margin:0 auto;padding:clamp(28px,5vw,54px) clamp(10px,3vw,
 .card .link:hover{background:var(--accent);color:#fff}
 .card .link.ghost{background:var(--panel-2);color:var(--ink);border:2px solid var(--line);padding:3px 8px}
 
+.rest{margin-bottom:14px;font-size:13px;color:var(--ink-soft)}
 .tail{margin-top:34px;text-align:center}
 .tail p{margin-bottom:16px;color:var(--ink-soft)}
 
@@ -169,7 +170,7 @@ html.still .rv{opacity:1 !important;transform:none !important;transition:none !i
     <div class="kicker">Everything on GitHub</div>
     <span class="pxt" data-text="ALL PROJECTS" data-scale="8" data-min="3"></span>
     <p style="margin-top:16px">
-      Every public repository, straight from
+      Every project you can open and use right now, straight from
       <a href="https://github.com/aloniewski2" target="_blank" rel="noopener">github.com/aloniewski2</a>
       — newest first.
     </p>
@@ -180,6 +181,7 @@ html.still .rv{opacity:1 !important;transform:none !important;transition:none !i
 
   <div class="tail">
     <p>Three of these are written up in detail on the main page.</p>
+    <p class="rest"><span id="hiddenCount">0</span> more repositories — including work in progress and projects that need a server — live on <a href="https://github.com/aloniewski2" target="_blank" rel="noopener">github.com/aloniewski2</a>.</p>
     <a class="btn primary" href="index.html">Back to the portfolio</a>
   </div>
 </main>
@@ -202,7 +204,27 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /* Pulled from the GitHub API by scripts/fetch-projects.mjs — re-run it to refresh. */
 /* PROJECTS:START */
-const PROJECTS = [
+let PROJECTS = [
+ {
+  "name": "subscription-saver",
+  "blurb": "LeakGuard — privacy-first subscription leak detector. Analyses bank statements entirely in the browser (zero backend) to surface recurring charges, duplicate services and hidden price rises, scored 0–100. React, TypeScript,…",
+  "langs": [
+   "TypeScript"
+  ],
+  "stars": 0,
+  "topics": [
+   "fintech",
+   "personal-finance",
+   "privacy",
+   "react",
+   "typescript"
+  ],
+  "url": "https://github.com/aloniewski2/subscription-saver",
+  "home": "https://aloniewski2.github.io/subscription-saver/",
+  "updated": "2026-08-19",
+  "created": "2026-02-02",
+  "empty": false
+ },
  {
   "name": "pixel-portfolio",
   "blurb": "Interactive pixel-art portfolio — a canvas sky that moves through the day as you scroll, and a résumé assistant that runs entirely in the browser.",
@@ -301,26 +323,6 @@ const PROJECTS = [
   "home": null,
   "updated": "2026-08-18",
   "created": "2026-03-28",
-  "empty": false
- },
- {
-  "name": "subscription-saver",
-  "blurb": "LeakGuard — privacy-first subscription leak detector. Analyses bank statements entirely in the browser (zero backend) to surface recurring charges, duplicate services and hidden price rises, scored 0–100. React, TypeScript,…",
-  "langs": [
-   "TypeScript"
-  ],
-  "stars": 0,
-  "topics": [
-   "fintech",
-   "personal-finance",
-   "privacy",
-   "react",
-   "typescript"
-  ],
-  "url": "https://github.com/aloniewski2/subscription-saver",
-  "home": null,
-  "updated": "2026-08-17",
-  "created": "2026-02-02",
   "empty": false
  },
  {
@@ -805,9 +807,16 @@ function card(p){
 }
 
 function build(){
+  // The page exists to show working software. A card you can't try is a
+  // link with extra steps, so anything without a live URL stays off it and
+  // is reachable through the GitHub link in the footer instead.
+  const HIDDEN = PROJECTS.length;
+  PROJECTS = PROJECTS.filter(p => p.home);
+  document.getElementById("hiddenCount").textContent = HIDDEN - PROJECTS.length;
+
   const langs = new Map();
   PROJECTS.forEach(p => p.langs.forEach(l => langs.set(l, (langs.get(l) || 0) + 1)));
-  const top = [...langs.entries()].sort((a,b) => b[1]-a[1]).filter(([,n]) => n > 1).map(([l]) => l);
+  const top = [...langs.entries()].sort((a,b) => b[1]-a[1]).filter(([,n]) => n > 1 && PROJECTS.length > 4).map(([l]) => l);
 
   const mk = (label, value, on) => {
     const b = el("button", null, label);
