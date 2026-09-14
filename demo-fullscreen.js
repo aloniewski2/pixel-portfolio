@@ -30,8 +30,12 @@
    last on the bar — the one control a visitor must find without looking. */
 .fs-x{flex:none;width:38px;height:38px;padding:0;justify-content:center;
   background:var(--accent,#ff6f4a);color:#fff;font-size:17px;letter-spacing:0}
-.fs-stage{flex:1;position:relative;min-height:0;background:#fff}
-.fs-stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+/* iOS Safari ignores an iframe's height and grows it to fit its content, so a
+   clipped stage would cut the bottom of an app off with no way to reach it.
+   Letting the stage scroll keeps every app reachable there; on every other
+   browser the frame fills the stage and this never engages. */
+.fs-stage{flex:1;position:relative;min-height:0;background:#fff;overflow:auto;-webkit-overflow-scrolling:touch}
+.fs-stage iframe{position:absolute;inset:0;width:1px;min-width:100%;height:100%;border:0}
 .fs-stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0b0b0f}
 .fs-load{position:absolute;inset:0;display:grid;place-items:center;background:#0f1526;
   color:#7f8db0;font-size:12px;letter-spacing:.14em;text-transform:uppercase}
