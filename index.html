@@ -2640,6 +2640,14 @@ chat.chips.addEventListener("click", e => {
       v.preload = "metadata";
       v.setAttribute("aria-label", label + " demo video");
       card.querySelector(".stage").prepend(v);
+      // The autoplay attribute is honoured inconsistently for a video that
+      // starts off-screen, so drive it: play in view, pause out of it.
+      new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) v.play().catch(() => {});
+          else v.pause();
+        }
+      }, { threshold: 0.25 }).observe(v);
     }
 
     card.querySelector("h3").textContent = label;
