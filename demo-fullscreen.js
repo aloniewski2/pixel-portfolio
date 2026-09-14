@@ -24,12 +24,15 @@
 .fs-title{flex:1;min-width:0;font-size:14px;font-weight:bold;letter-spacing:.12em;
   text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fs-bar .btn{padding:7px 12px;font-size:12px;box-shadow:4px 4px 0 var(--line,#191a2c)}
+/* .btn sets its own display, which would beat the hidden attribute. */
+.fs-bar .btn[hidden]{display:none}
 /* Square, so it reads as a pixel button rather than a stray letter, and always
    last on the bar — the one control a visitor must find without looking. */
 .fs-x{flex:none;width:38px;height:38px;padding:0;justify-content:center;
   background:var(--accent,#ff6f4a);color:#fff;font-size:17px;letter-spacing:0}
 .fs-stage{flex:1;position:relative;min-height:0;background:#fff}
 .fs-stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.fs-stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0b0b0f}
 .fs-load{position:absolute;inset:0;display:grid;place-items:center;background:#0f1526;
   color:#7f8db0;font-size:12px;letter-spacing:.14em;text-transform:uppercase}
 body.fs-locked{overflow:hidden}
@@ -66,22 +69,35 @@ body.fs-locked{overflow:hidden}
   const stage = fs.querySelector(".fs-stage");
   let lastFocus = null;
 
-  window.openDemo = function openDemo({ src, label, trigger }) {
-    if (!src) return;
+  /* `src` plays a live app in a frame. `video` plays a recorded walkthrough
+   * instead — for an app that is not public yet — with the same chrome, so
+   * the two kinds of demo feel like one feature rather than two. */
+  window.openDemo = function openDemo({ src, video, poster, label, trigger }) {
+    if (!src && !video) return;
     lastFocus = trigger || document.activeElement;
     title.textContent = label || "Live demo";
     fs.setAttribute("aria-label", `${label || "Live"} demo`);
-    openLink.href = src;
+    // There is nothing to open in a new tab for a recording.
+    openLink.hidden = !src;
+    if (src) openLink.href = src;
 
-    const load = document.createElement("div");
-    load.className = "fs-load";
-    load.textContent = "loading demo…";
-    const frame = document.createElement("iframe");
-    frame.src = src;
-    frame.title = `${label || "Live"} demo`;
-    frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-popups allow-forms");
-    frame.addEventListener("load", () => load.remove(), { once: true });
-    stage.replaceChildren(load, frame);
+    if (video) {
+      const v = document.createElement("video");
+      v.src = video; v.poster = poster || "";
+      v.controls = true; v.autoplay = true; v.playsInline = true;
+      v.setAttribute("aria-label", `${label || "Demo"} video`);
+      stage.replaceChildren(v);
+    } else {
+      const load = document.createElement("div");
+      load.className = "fs-load";
+      load.textContent = "loading demo…";
+      const frame = document.createElement("iframe");
+      frame.src = src;
+      frame.title = `${label || "Live"} demo`;
+      frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-popups allow-forms");
+      frame.addEventListener("load", () => load.remove(), { once: true });
+      stage.replaceChildren(load, frame);
+    }
 
     fs.hidden = false;
     fs.classList.add("open");
@@ -107,7 +123,7 @@ body.fs-locked{overflow:hidden}
      not wander behind the overlay while it is up. */
   fs.addEventListener("keydown", (e) => {
     if (e.key !== "Tab") return;
-    const stops = [openLink, closeBtn];
+    const stops = [openLink, closeBtn].filter((el) => !el.hidden);
     const i = stops.indexOf(document.activeElement);
     if (i === -1) { e.preventDefault(); closeBtn.focus(); return; }
     const next = e.shiftKey ? i - 1 : i + 1;

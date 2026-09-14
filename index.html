@@ -432,6 +432,12 @@ section{padding-top:clamp(46px,7vw,86px);scroll-margin-top:70px}
   border:2px solid var(--line);padding:2px 7px;
   font-size:10px;font-weight:bold;letter-spacing:.12em;text-transform:uppercase;
 }
+.demo .tagline.soon{background:var(--accent)}
+/* A recorded walkthrough for an app that is not public yet. Portrait footage
+   is letterboxed rather than cropped, so the phone stays whole. */
+.demo .stage video{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0b0b0f;
+}
 
 .demo .meat{padding:16px 18px 18px;display:flex;flex-direction:column;gap:9px;flex:1}
 .demo h3{font-size:16px}
@@ -2585,39 +2591,56 @@ chat.chips.addEventListener("click", e => {
   try { repos = JSON.parse(island.textContent); } catch { return; }
 
   // Friendlier names than the repo slugs, and the order to show them in.
+  // An entry with `video` is not live yet: the card plays a recorded
+  // walkthrough instead of the app, and says so.
   const SHOW = [
     ["solveit-ai-v1",      "SolveIT AI"],
-    ["finguard",           "FinGuard"],
     ["lifeAI",             "AI Legacy OS"],
-    ["subscription-saver", "LeakGuard"],
+    ["finguard",           "FinGuard"],
     ["Datadrop",           "DataDropAI"],
+    ["subscription-saver", "LeakGuard"],
     ["DineValley",         "DineValley"],
-    ["1v1club",            "1v1 Club"],
+    ["1v1club",            "1v1 Club", { video: "videos/1v1club-demo.mp4", poster: "videos/1v1club-demo.jpg", tag: "Launching soon" }],
   ];
 
   const byName = new Map(repos.map(r => [r.name, r]));
   const cards = [];
 
-  for (const [slug, label] of SHOW) {
+  for (const [slug, label, extra = {}] of SHOW) {
     const r = byName.get(slug);
-    if (!r?.home) continue;
+    if (!r) continue;
+    const { video, poster, tag } = extra;
+    if (!video && !r.home) continue;
 
     // http can't be framed from an https page; the site redirects anyway.
-    const src = r.home.replace(/^http:\/\//, "https://");
+    const src = video ? null : r.home.replace(/^http:\/\//, "https://");
 
     const card = document.createElement("article");
     card.className = "demo panel rv";
     card.innerHTML =
       `<div class="stage">` +
-        `<span class="tagline">Live</span>` +
-        `<div class="loading">loading demo\u2026</div>` +
-        `<div class="veil" role="button" tabindex="0" aria-label="Interact with the ${label} demo">` +
-          `<span>\u25B6 Play fullscreen</span></div>` +
+        `<span class="tagline${video ? " soon" : ""}"></span>` +
+        (video ? "" : `<div class="loading">loading demo\u2026</div>`) +
+        `<div class="veil" role="button" tabindex="0" aria-label="${video ? "Watch the" : "Interact with the"} ${label} demo">` +
+          `<span>\u25B6 ${video ? "Watch" : "Play"} fullscreen</span></div>` +
       `</div>` +
       `<div class="meat">` +
         `<h3></h3><p></p>` +
         `<div class="row"></div>` +
       `</div>`;
+    card.querySelector(".tagline").textContent = tag || "Live";
+
+    if (video) {
+      // Muted autoplay is the only autoplay browsers allow, and a silent
+      // loop is exactly what a preview should be; the sound-free walkthrough
+      // gets controls once it is opened fullscreen.
+      const v = document.createElement("video");
+      v.src = video; v.poster = poster || "";
+      v.muted = true; v.loop = true; v.autoplay = true; v.playsInline = true;
+      v.preload = "metadata";
+      v.setAttribute("aria-label", label + " demo video");
+      card.querySelector(".stage").prepend(v);
+    }
 
     card.querySelector("h3").textContent = label;
     card.querySelector("p").textContent = r.blurb || "";
@@ -2629,29 +2652,34 @@ chat.chips.addEventListener("click", e => {
       t.textContent = l;
       row.append(t);
     }
-    const open = document.createElement("a");
-    open.className = "btn primary";
-    open.href = src; open.target = "_blank"; open.rel = "noopener";
-    open.textContent = "Open \u2197";
     const code = document.createElement("a");
     code.className = "btn";
     code.href = r.url; code.target = "_blank"; code.rel = "noopener";
     code.textContent = "Code";
-    row.append(open, code);
+    if (src) {
+      // Nothing to open for an app that is not public yet.
+      const open = document.createElement("a");
+      open.className = "btn primary";
+      open.href = src; open.target = "_blank"; open.rel = "noopener";
+      open.textContent = "Open \u2197";
+      row.append(open);
+    }
+    row.append(code);
 
     const stage = card.querySelector(".stage");
     const veil = card.querySelector(".veil");
     // The card frame stays a non-interactive preview. Interacting means going
     // fullscreen, which is the only size these apps are usable at, and it keeps
     // the card's iframe from ever eating the page scroll.
-    const activate = () => window.openDemo({ src, label, trigger: veil });
+    const activate = () => window.openDemo({ src, video, poster, label, trigger: veil });
     veil.addEventListener("click", activate);
     veil.addEventListener("keydown", e => {
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(); }
     });
 
     grid.append(card);
-    cards.push({ card, stage, src, label });
+    // Only live apps go through the lazy iframe queue; the video is already in place.
+    if (src) cards.push({ card, stage, src, label });
   }
 
   // Load a frame slightly before it comes into view, one at a time, so the
