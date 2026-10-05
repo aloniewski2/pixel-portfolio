@@ -7,6 +7,8 @@
   "scripts": {
     "start": "npx --yes serve -l 8000 .",
     "build:knowledge": "node scripts/build-knowledge.mjs",
-    "build": "node scripts/build-knowledge.mjs"
+    "build": "node scripts/build-knowledge.mjs",
+    "serve:chat": "node scripts/serve-chat.mjs",
+    "eval:chat": "node scripts/eval-chat.mjs"
   }
 }

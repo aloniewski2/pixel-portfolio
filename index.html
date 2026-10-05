@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Junior Software Engineer at Noteefy — React, TypeScript, Python, MongoDB. CS & Finance at Muhlenberg College. Ask the bird anything about my work.">
 <meta name="author" content="Andrew Loniewski">
+<!-- Where the assistant's language model lives. Leave empty to use /api/chat on this
+     same host. On GitHub Pages (which can't run api/chat.js), set this to the URL of
+     the Vercel deployment, e.g. https://pixel-portfolio-chat.vercel.app/api/chat -->
+<meta name="chat-endpoint" content="">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='6' y='3' width='4' height='10' fill='%23f2b134'/><rect x='3' y='6' width='10' height='4' fill='%23f2b134'/><rect x='5' y='5' width='6' height='6' fill='%23ffd94a'/><rect x='0' y='7' width='2' height='2' fill='%23ffd94a'/><rect x='14' y='7' width='2' height='2' fill='%23ffd94a'/><rect x='7' y='0' width='2' height='2' fill='%23ffd94a'/><rect x='7' y='14' width='2' height='2' fill='%23ffd94a'/></svg>">
 
 <!-- Link previews: without these a shared URL renders as bare text.
@@ -1758,6 +1762,7 @@ function drawSprites(){
      3. built-in   — the default, and what visitors actually get
    ========================================================= */
 const OLLAMA = "http://localhost:11434";
+const CHAT_ENDPOINT = document.querySelector('meta[name="chat-endpoint"]')?.content.trim() || "/api/chat";
 const PREFERRED_MODELS = ["llama3.2", "qwen2.5", "llama3.1", "mistral", "gemma", "phi"];
 
 const chat = {
@@ -2325,16 +2330,18 @@ RESUME
 ${resumeContext()}`;
 
 async function* viaProxy(){
-  const res = await fetch("/api/chat", {
+  const res = await fetch(CHAT_ENDPOINT, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ messages: chat.history.slice(-12) })
   });
   const type = res.headers.get("content-type") || "";
-  if (res.status === 404 || !res.body || !type.includes("json")) throw new Error("unavailable");
+  if (!res.ok || !res.body || !type.includes("json")) throw new Error("unavailable");
+  let said = false;
   for await (const msg of jsonLines(res)){
-    if (msg.text) yield msg.text;
-    if (msg.error) yield `\n[${msg.error}]`;
+    if (msg.text){ said = true; yield msg.text; }
+    // Nothing written yet: let the built-in engine answer instead of showing an error.
+    if (msg.error){ if (!said) throw new Error(msg.error); yield `\n[${msg.error}]`; }
   }
 }
 
@@ -2360,7 +2367,7 @@ async function* viaOllama(){
    engine is ready the moment the page is. */
 async function probeBackends(){
   try {
-    const res = await fetch("/api/chat", {
+    const res = await fetch(CHAT_ENDPOINT, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: "{}",
