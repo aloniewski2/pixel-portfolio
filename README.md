@@ -149,23 +149,69 @@ run a model — and the three constraints (instant · nothing on the visitor's e
 all hold if *you* supply the model, not the visitor.
 
 The cheapest way is a **free-tier key held server-side**. Free tiers with no credit card required
-include Groq, Google Gemini, Cerebras, and OpenRouter's `:free` models. Then:
+include Groq, Google Gemini, Cerebras, and OpenRouter's `:free` models. **This site runs on Groq's
+free tier, at $0:** `openai/gpt-oss-120b`, falling back to `openai/gpt-oss-20b`, with the first
+words arriving in about a second. Groq allows each free model 8K tokens a minute and 200K a day, and
+every question carries the ~3.5K-token résumé, so that's roughly 2 questions a minute and 50 a day
+per model. Past that, the built-in engine answers instead.
+
+(Vercel AI Gateway won't serve a request until a credit card is on file, even on its free tier,
+so it isn't used here.)
+
+**Live:** https://andrewloniewski.vercel.app serves the whole site and the endpoint; the GitHub
+Pages copy calls the same endpoint.
+
+This is deliberately *not* fine-tuning. A model trained on a five-page résumé memorises it badly
+and invents plausible-sounding details; a strong model that reads the whole résumé on every
+question (it's ~3k tokens) answers more accurately, and picks up an edit the moment you redeploy.
+
+The site is on GitHub Pages, which can only serve static files, so the endpoint is deployed to
+Vercel separately and the page calls it cross-origin:
 
 ```bash
-npm run build:knowledge          # bundles knowledge/ into api/knowledge.js
-vercel                           # deploys the page + api/chat.js
-vercel env add LLM_BASE_URL      # e.g. https://api.groq.com/openai/v1
-vercel env add LLM_MODEL         # e.g. llama-3.3-70b-versatile
-vercel env add LLM_API_KEY       # the free key
+npm run build:knowledge          # bundles knowledge/ + the repo catalogue into api/knowledge.js
+vercel                           # deploys api/chat.js (the static files come along, unused)
+vercel env add LLM_BASE_URL      # https://api.groq.com/openai/v1
+vercel env add LLM_MODEL         # openai/gpt-oss-120b
+vercel env add LLM_FALLBACK_MODEL  # openai/gpt-oss-20b — used when the main model is rate-limited
+vercel env add LLM_REASONING_EFFORT  # low — gpt-oss answers sooner and spends fewer tokens
+vercel env add LLM_API_KEY       # the free key from console.groq.com
+vercel --prod
 ```
+
+Then point the page at it — one line in the `<head>` of `index.html`:
+
+```html
+<meta name="chat-endpoint" content="https://andrewloniewski.vercel.app/api/chat">
+```
+
+and push to GitHub Pages. `ALLOWED_ORIGINS` (default `https://aloniewski2.github.io`) controls
+which sites may call the endpoint; add a custom domain there if you move to one. If you'd rather
+serve the whole site from Vercel, leave the meta tag empty and it uses `/api/chat` on the same host.
 
 `api/chat.js` speaks the OpenAI-compatible chat-completions dialect, so any of those providers
 works with only env vars changed — and so do Ollama, LM Studio, llama.cpp, and vLLM. It has no
 dependencies.
 
-**The frontend needs no changes.** On load it quietly probes `/api/chat`; if a proxy answers, the
-terminal switches to it and the header chip reads "Hosted model". If not, the built-in engine
-handles everything as before. A model that dies mid-answer falls back automatically.
+**Check it before you ship it.** `scripts/eval-chat.mjs` asks fifteen fixed questions — facts,
+skills with and without evidence, salary, a made-up employer, a prompt-injection attempt — and
+fails any answer that misses a fact, invents one, leaks the prompt, or uses Markdown the chat
+window can't render. It also reports time to first token.
+
+```bash
+LLM_BASE_URL=https://api.groq.com/openai/v1 LLM_MODEL=openai/gpt-oss-120b \
+LLM_API_KEY=... npm run serve:chat            # api/chat.js on http://localhost:3000
+npm run eval:chat                             # score it
+CHAT_URL=https://andrewloniewski.vercel.app/api/chat EVAL_DELAY_MS=20000 npm run eval:chat
+                                              # score production, paced for the free tier
+```
+
+Add a case whenever a visitor's question gets a bad answer.
+
+On load the page quietly probes the endpoint; if it answers, the dock switches to it and the header
+chip reads "Hosted model". If not, the built-in engine handles everything as before. If the model
+errors or is rate-limited before writing anything, that question is answered by the built-in
+engine instead, so a visitor never sees an error in place of an answer.
 
 **Local development with Ollama:** if you're browsing from `http://localhost` and Ollama is
 running, the page finds it and uses it — no config, no key. Ollama accepts browser requests from
@@ -182,7 +228,8 @@ to the deployed site are never asked to install anything.
 ### `knowledge/`
 
 Only used by the optional proxy. Drop in anything you want a model to know — project write-ups, a
-longer bio, README files, source copied out of a repo — and run `npm run build:knowledge`. It
+longer bio, what roles you're looking for, README files, source copied out of a repo — and run
+`npm run build:knowledge`. The public-repo catalogue in `index.html` is added automatically. It
 picks up text and code formats, skips `node_modules`/`.git`/binaries, caps single files at 120KB
 and the whole corpus at 400KB.
 

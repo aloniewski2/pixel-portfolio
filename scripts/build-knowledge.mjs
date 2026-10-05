@@ -6,6 +6,10 @@
 //
 // Drop anything you want the assistant to know into knowledge/ — Markdown notes,
 // README files, source files from a repo — then re-run this and redeploy.
+//
+// It also adds the full public-repo catalogue from index.html (written there by
+// scripts/fetch-projects.mjs), so the model knows every project, not only the
+// three on the resume.
 
 import { readdir, readFile, writeFile, stat } from "node:fs/promises";
 import { join, relative, extname, sep } from "node:path";
@@ -64,6 +68,28 @@ if (files.length === 0) {
 const sections = [];
 let total = 0;
 let skipped = 0;
+
+// Every public repo, as one compact document.
+try {
+  const page = await readFile(join(ROOT, "index.html"), "utf8");
+  const json = page.match(/<script type="application\/json" id="repo-data">([\s\S]*?)<\/script>/)?.[1];
+  const repos = json ? JSON.parse(json) : [];
+  if (repos.length) {
+    const lines = repos.map((r) =>
+      `- ${r.name}${r.blurb ? ` — ${r.blurb}` : ""}` +
+      `${r.langs?.length ? ` [${r.langs.join(", ")}]` : ""}` +
+      ` Code: ${r.url}${r.home ? ` Live: ${r.home}` : ""} (updated ${r.updated})`);
+    const section =
+      `<document path="github-projects (generated from index.html)">\n` +
+      `All of Andrew's public GitHub repositories, newest first. A repo with no description ` +
+      `has no further detail available.\n\n${lines.join("\n")}\n</document>`;
+    sections.push(section);
+    total += section.length;
+    console.log(`  add   github-projects (${repos.length} repos)`);
+  }
+} catch (err) {
+  console.warn(`  skip  github-projects (${err.message})`);
+}
 
 for (const file of files) {
   const info = await stat(file);
