@@ -13,7 +13,9 @@
 //   LLM_MODEL      default llama3.2
 //   LLM_API_KEY    optional — omit entirely for local models
 //   LLM_FALLBACK_MODEL   optional — tried when LLM_MODEL is rate-limited or down
-//                        (e.g. llama-3.1-8b-instant next to llama-3.3-70b-versatile)
+//                        (e.g. openai/gpt-oss-20b next to openai/gpt-oss-120b)
+//   LLM_REASONING_EFFORT optional — low|medium|high, for reasoning models such as
+//                        openai/gpt-oss-*; "low" answers sooner and spends fewer tokens
 //   ALLOWED_ORIGINS      comma-separated origins allowed to call this from another
 //                        host; default https://aloniewski2.github.io
 //
@@ -31,6 +33,7 @@ const BASE_URL = (process.env.LLM_BASE_URL || "http://localhost:11434/v1").repla
 const MODEL = process.env.LLM_MODEL || "llama3.2";
 const API_KEY = process.env.LLM_API_KEY || "";
 const FALLBACK_MODEL = process.env.LLM_FALLBACK_MODEL || "";
+const REASONING_EFFORT = process.env.LLM_REASONING_EFFORT || "";
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || "https://aloniewski2.github.io")
   .split(",").map((o) => o.trim().replace(/\/$/, "")).filter(Boolean);
 
@@ -57,7 +60,7 @@ Answer using ONLY the documents below. If the answer isn't in them, say so in on
 
 Write 2-4 sentences. Refer to Andrew in the third person — you are not Andrew. No preamble, no "Great question", no restating the question. Lead with the direct answer, then the most concrete supporting fact (a number, a project, a stack). Use short "- " bullets only when listing several distinct items.
 
-Plain text only: the chat window does not render Markdown, so no **bold**, headings, or [text](url) links — write URLs out in full.
+Plain text only: the chat window does not render Markdown, so no **bold**, headings, or [text](url) links — write URLs out in full. Don't cite document or section names — just answer.
 
 When a visitor asks about a skill, say where in the documents it shows up (which job or project). If it's only listed in his skills and no job or project mentions it, say exactly that. If a question is ambiguous, answer the most likely reading rather than asking back.
 
@@ -111,6 +114,7 @@ function upstreamRequest(model, messages) {
       stream: true,
       temperature: 0.2,
       max_tokens: 400,
+      ...(REASONING_EFFORT ? { reasoning_effort: REASONING_EFFORT } : {}),
       messages: [
         { role: "system", content: SYSTEM },
         ...messages.map((m) => ({ role: m.role, content: m.content })),
@@ -152,8 +156,9 @@ export default async function handler(request) {
 
       try {
         let upstream = await upstreamRequest(MODEL, body.messages);
-        // Free tiers rate-limit per model; a smaller sibling usually still has room.
-        if (FALLBACK_MODEL && (upstream.status === 429 || upstream.status >= 500)) {
+        // Free tiers rate-limit per model, so a sibling usually still has room. 404 is
+        // a model the provider retired or this key can't use.
+        if (FALLBACK_MODEL && (upstream.status === 404 || upstream.status === 429 || upstream.status >= 500)) {
           console.warn(`upstream ${upstream.status} on ${MODEL}, trying ${FALLBACK_MODEL}`);
           await upstream.body?.cancel();
           upstream = await upstreamRequest(FALLBACK_MODEL, body.messages);

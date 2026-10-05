@@ -11,6 +11,9 @@
 
 const URL = process.env.CHAT_URL || "http://localhost:3000/api/chat";
 const ORIGIN = process.env.CHAT_ORIGIN || "https://aloniewski2.github.io";
+// Free tiers cap tokens per minute; pace the run so it measures answers, not limits.
+// Groq's free tier: EVAL_DELAY_MS=20000.
+const DELAY = Number(process.env.EVAL_DELAY_MS) || 0;
 
 const CASES = [
   { q: "Where does he work right now?", must: ["noteefy", "junior software engineer"] },
@@ -57,7 +60,8 @@ async function ask(question) {
 
 let passed = 0;
 const latencies = [];
-for (const c of CASES) {
+for (const [i, c] of CASES.entries()) {
+  if (i && DELAY) await new Promise((r) => setTimeout(r, DELAY));
   const r = await ask(c.q);
   const problems = [];
   if (r.error) problems.push(`error: ${r.error}`);

@@ -149,8 +149,17 @@ run a model — and the three constraints (instant · nothing on the visitor's e
 all hold if *you* supply the model, not the visitor.
 
 The cheapest way is a **free-tier key held server-side**. Free tiers with no credit card required
-include Groq, Google Gemini, Cerebras, and OpenRouter's `:free` models. Groq is the recommended
-default: `llama-3.3-70b-versatile` starts streaming in a few hundred milliseconds.
+include Groq, Google Gemini, Cerebras, and OpenRouter's `:free` models. **This site runs on Groq's
+free tier, at $0:** `openai/gpt-oss-120b`, falling back to `openai/gpt-oss-20b`, with the first
+words arriving in about a second. Groq allows each free model 8K tokens a minute and 200K a day, and
+every question carries the ~3.5K-token résumé, so that's roughly 2 questions a minute and 50 a day
+per model. Past that, the built-in engine answers instead.
+
+(Vercel AI Gateway won't serve a request until a credit card is on file, even on its free tier,
+so it isn't used here.)
+
+**Live:** https://andrewloniewski.vercel.app serves the whole site and the endpoint; the GitHub
+Pages copy calls the same endpoint.
 
 This is deliberately *not* fine-tuning. A model trained on a five-page résumé memorises it badly
 and invents plausible-sounding details; a strong model that reads the whole résumé on every
@@ -163,8 +172,9 @@ Vercel separately and the page calls it cross-origin:
 npm run build:knowledge          # bundles knowledge/ + the repo catalogue into api/knowledge.js
 vercel                           # deploys api/chat.js (the static files come along, unused)
 vercel env add LLM_BASE_URL      # https://api.groq.com/openai/v1
-vercel env add LLM_MODEL         # llama-3.3-70b-versatile
-vercel env add LLM_FALLBACK_MODEL  # llama-3.1-8b-instant — used when the main model is rate-limited
+vercel env add LLM_MODEL         # openai/gpt-oss-120b
+vercel env add LLM_FALLBACK_MODEL  # openai/gpt-oss-20b — used when the main model is rate-limited
+vercel env add LLM_REASONING_EFFORT  # low — gpt-oss answers sooner and spends fewer tokens
 vercel env add LLM_API_KEY       # the free key from console.groq.com
 vercel --prod
 ```
@@ -172,7 +182,7 @@ vercel --prod
 Then point the page at it — one line in the `<head>` of `index.html`:
 
 ```html
-<meta name="chat-endpoint" content="https://<your-project>.vercel.app/api/chat">
+<meta name="chat-endpoint" content="https://andrewloniewski.vercel.app/api/chat">
 ```
 
 and push to GitHub Pages. `ALLOWED_ORIGINS` (default `https://aloniewski2.github.io`) controls
@@ -189,10 +199,11 @@ fails any answer that misses a fact, invents one, leaks the prompt, or uses Mark
 window can't render. It also reports time to first token.
 
 ```bash
-LLM_BASE_URL=https://api.groq.com/openai/v1 LLM_MODEL=llama-3.3-70b-versatile \
+LLM_BASE_URL=https://api.groq.com/openai/v1 LLM_MODEL=openai/gpt-oss-120b \
 LLM_API_KEY=... npm run serve:chat            # api/chat.js on http://localhost:3000
 npm run eval:chat                             # score it
-CHAT_URL=https://<your-project>.vercel.app/api/chat npm run eval:chat   # score production
+CHAT_URL=https://andrewloniewski.vercel.app/api/chat EVAL_DELAY_MS=20000 npm run eval:chat
+                                              # score production, paced for the free tier
 ```
 
 Add a case whenever a visitor's question gets a bad answer.
