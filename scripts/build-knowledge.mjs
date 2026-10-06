@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Bundles everything in knowledge/ into api/knowledge.js so the chat endpoint can
-// ship it as one cached system prompt.
+// Bundles knowledge/ into api/knowledge.js for the chat endpoint: top-level files
+// as the core sent with every question, subfolder files as chunks it looks up.
 //
 //   node scripts/build-knowledge.mjs
 //
@@ -65,7 +65,12 @@ if (files.length === 0) {
   process.exit(1);
 }
 
+// Files directly in knowledge/ (resume.md, about.md, ...) are the core: sent with
+// every question. Files in subfolders (projects/ from fetch-readmes.mjs) are cut
+// into chunks the endpoint looks up per question, so a free-tier model's
+// tokens-per-minute budget goes on the few passages that matter.
 const sections = [];
+const chunks = [];
 let total = 0;
 let skipped = 0;
 
@@ -81,14 +86,43 @@ try {
       ` Code: ${r.url}${r.home ? ` Live: ${r.home}` : ""} (updated ${r.updated})`);
     const section =
       `<document path="github-projects (generated from index.html)">\n` +
-      `All of Andrew's public GitHub repositories, newest first. A repo with no description ` +
-      `has no further detail available.\n\n${lines.join("\n")}\n</document>`;
+      `All of Andrew's public GitHub repositories, newest first. More detail on a repo, ` +
+      `when there is any, appears in the project documents below.\n\n${lines.join("\n")}\n</document>`;
     sections.push(section);
     total += section.length;
-    console.log(`  add   github-projects (${repos.length} repos)`);
+    console.log(`  core  github-projects (${repos.length} repos)`);
   }
 } catch (err) {
   console.warn(`  skip  github-projects (${err.message})`);
+}
+
+const CHUNK_CHARS = 1400;
+
+// Split on headings, then pack neighbouring sections up to CHUNK_CHARS. Every
+// chunk keeps the file's header block (project name, links) so it stands alone.
+function chunk(label, body) {
+  const [head, ...rest] = body.split(/\n\s*\n/);
+  const text = rest.join("\n\n");
+  const pieces = text.split(/\n(?=#{1,3} )/).flatMap((sec) => {
+    if (sec.length <= CHUNK_CHARS) return [sec];
+    const out = [];
+    let cur = "";
+    for (const para of sec.split(/\n\s*\n/)) {
+      if (cur && cur.length + para.length > CHUNK_CHARS) { out.push(cur); cur = ""; }
+      cur += (cur ? "\n\n" : "") + para;
+    }
+    if (cur) out.push(cur);
+    return out;
+  });
+  const packed = [];
+  let cur = "";
+  for (const p of pieces.map((x) => x.trim()).filter(Boolean)) {
+    if (cur && cur.length + p.length > CHUNK_CHARS) { packed.push(cur); cur = ""; }
+    cur += (cur ? "\n\n" : "") + p;
+  }
+  if (cur) packed.push(cur);
+  if (!packed.length) packed.push("");
+  return packed.map((p) => ({ path: label, text: `${head}\n\n${p}`.trim() }));
 }
 
 for (const file of files) {
@@ -104,16 +138,22 @@ for (const file of files) {
   const body = (await readFile(file, "utf8")).trim();
   if (!body) continue;
 
+  if (label.includes("/")) {
+    const parts = chunk(label, body);
+    chunks.push(...parts);
+    console.log(`  chunk ${label} (${parts.length})`);
+    continue;
+  }
+
   const section = `<document path="${label}">\n${body}\n</document>`;
   if (total + section.length > MAX_TOTAL_CHARS) {
     console.warn(`  skip  ${label} (total budget reached)`);
     skipped++;
     continue;
   }
-
   sections.push(section);
   total += section.length;
-  console.log(`  add   ${label} (${(body.length / 1024).toFixed(1)}KB)`);
+  console.log(`  core  ${label} (${(body.length / 1024).toFixed(1)}KB)`);
 }
 
 const knowledge = sections.join("\n\n");
@@ -121,13 +161,14 @@ const knowledge = sections.join("\n\n");
 await writeFile(
   OUT,
   "// GENERATED FILE — edit knowledge/ and run `npm run build:knowledge` instead.\n" +
-  `// ${sections.length} document(s), ${knowledge.length} characters.\n` +
-  `export const KNOWLEDGE = ${JSON.stringify(knowledge)};\n`,
+  `// Core: ${sections.length} document(s), ${knowledge.length} characters. ` +
+  `Lookup: ${chunks.length} chunk(s).\n` +
+  `export const KNOWLEDGE = ${JSON.stringify(knowledge)};\n` +
+  `export const CHUNKS = ${JSON.stringify(chunks)};\n`,
   "utf8"
 );
 
 console.log(
-  `\nWrote ${relative(ROOT, OUT)} — ${sections.length} document(s), ` +
-  `${(knowledge.length / 1024).toFixed(1)}KB` +
-  (skipped ? `, ${skipped} skipped` : "")
+  `\nWrote ${relative(ROOT, OUT)} — core ${(knowledge.length / 1024).toFixed(1)}KB, ` +
+  `${chunks.length} lookup chunks` + (skipped ? `, ${skipped} skipped` : "")
 );
