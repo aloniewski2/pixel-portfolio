@@ -39,6 +39,13 @@ const CASES = [
   { q: "what APIs does MealMatch use", must: ["mealdb|spoonacular|usda"] },
   { q: "What is lifeAI?", must: ["local|device|archive|legacy"] },
   { q: "What's the tech stack of SolveIT AI?", must: ["supabase|gemini|qwen|groq"] },
+  // From knowledge/about.md, which only Andrew could supply.
+  { q: "When is he available and what roles does he want?", must: ["2027", "full.stack|backend|fintech|ai"] },
+  { q: "Would he relocate?", must: ["relocat|open"], never: ["remote only"] },
+  { q: "How does he handle pressure?", must: ["wrestl"] },
+  { q: "Why did he study both CS and finance?", must: ["business|market"] },
+  { q: "What does he do for fun?", must: ["golf|gaming|sports"] },
+  { q: "Does he use AI in his work?", must: ["agent|workflow"] },
 ];
 
 const MARKDOWN = /\*\*|^#+\s|\]\(http/m;
