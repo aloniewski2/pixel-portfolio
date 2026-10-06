@@ -1,3 +1,10 @@
+# Project: pixel-portfolio
+Summary: Interactive pixel-art portfolio — a canvas sky that moves through the day as you scroll, and a résumé assistant that runs entirely in the browser.
+Code: https://github.com/aloniewski2/pixel-portfolio
+Live: https://aloniewski2.github.io/pixel-portfolio/
+Languages: HTML, JavaScript
+Last updated: 2026-08-23
+
 # Pixel Sky Portfolio — Andrew Loniewski
 
 A pixel-art portfolio with a resume assistant that answers instantly for every visitor —
@@ -6,9 +13,9 @@ no API key, no account, no server, no cost.
 - `index.html` — the whole site: markup, styles, pixel-art engine, bitmap font, and the
   assistant. No build step, no dependencies, no external requests.
 - `projects.html` — every public GitHub repo, with language filters. Linked from the
-  **View all projects** button under the three featured write-ups.
+  View all projects button under the three featured write-ups.
 - `scripts/fetch-projects.mjs` — refreshes that page from the GitHub API.
-- `knowledge/` + `scripts/build-knowledge.mjs` + `api/chat.js` — **optional**, only needed if you
+- `knowledge/` + `scripts/build-knowledge.mjs` + `api/chat.js` — optional, only needed if you
   later want a real language model answering on the deployed site. See "Upgrading" below.
 
 ## The idea
@@ -16,11 +23,11 @@ no API key, no account, no server, no cost.
 The whole page sits on a live pixel-art sky rendered to a canvas at ~1/5 resolution and scaled up
 with `image-rendering: pixelated`, so every gradient band, cloud, and tree is a real chunky pixel.
 
-**Scrolling advances the time of day.** Top of the page is morning; by the contact section the sun
+Scrolling advances the time of day. Top of the page is morning; by the contact section the sun
 has set through golden hour and dusk and the stars are out. The sky, sun/moon arc, cloud shading,
 hills, and birds all interpolate from the same five keyframed palettes.
 
-The intro sits directly in that sky — no card, no panel. **The name is towed in by a plane.** A
+The intro sits directly in that sky — no card, no panel. The name is towed in by a plane. A
 pixel biplane flies in on load hauling a cloth banner that carries "ANDREW LONIEWSKI" in the same
 5×7 bitmap font as everything else; it settles into place and holds station with a gentle bob. The
 banner is redrawn column by column every frame against a travelling sine, so the cloth ripples the
@@ -28,7 +35,7 @@ way a real aerial banner does, and the tow rope sags and snaps on the same wave.
 sits on the free end, trailing away from the plane.
 
 As the sky turns, so does the rig. Between roughly 80% and 95% of the way down the page — dusk into
-night — the biplane hands the name over to a **flying saucer**, crossfaded so it reads as a
+night — the biplane hands the name over to a flying saucer, crossfaded so it reads as a
 transformation rather than a pop. The cloth banner becomes a hologram: dark plate, neon-green frame
 and lettering, scanlines, and a slight flicker; the billowing ripple drops to a tremble, because a
 hologram doesn't catch the wind. The tow rope becomes a pulsing beam of light, and the saucer's
@@ -36,7 +43,7 @@ running lights chase around its rim.
 
 The rig is deliberately restrained — about 40% of the viewport at desktop — so the scenery carries
 the page rather than the title. It paints once at its resting position the moment it's built, so a
-throttled or backgrounded tab never shows a page with no heading, and the real `<h1>` is live text
+throttled or backgrounded tab never shows a page with no heading, and the real `` is live text
 for screen readers with the canvas marked `aria-hidden`.
 
 Body copy is set in a real monospace face (`ui-monospace` / SF Mono / Menlo) rather than Courier
@@ -45,12 +52,10 @@ two-pixel cream halo so it stays readable at every point in the day cycle.
 
 ## Things to try
 
-- **Click the bird** — bottom-right, always on screen. It opens the assistant.
-- **Scroll** — the sun arcs and the palette shifts. The nav chip shows the current time of day.
-- **Click the nav chip** — cycles `AUTO → DAY → GOLDEN HOUR → NIGHT` to pin the sky.
-- **Click anywhere on the sky** — spawns a cloud that drifts away.
-
----
+- Click the bird — bottom-right, always on screen. It opens the assistant.
+- Scroll — the sun arcs and the palette shifts. The nav chip shows the current time of day.
+- Click the nav chip — cycles `AUTO → DAY → GOLDEN HOUR → NIGHT` to pin the sky.
+- Click anywhere on the sky — spawns a cloud that drifts away.
 
 ## The bird
 
@@ -66,7 +71,7 @@ one sprite, drawn once per frame and copied into both canvases.
 The dock itself is a light chat surface rather than a terminal: right-aligned ink bubbles for the
 visitor, cream bordered bubbles for answers, quiet centred system lines, a one-row scrollable strip
 of suggested questions, and a pulsing-dot typing indicator. Speaker is carried by alignment and
-colour, with the labels kept in the accessibility tree for screen readers. The nav's **ASK** button and the hero's **Ask my resume** button open the same
+colour, with the labels kept in the accessibility tree for screen readers. The nav's ASK button and the hero's Ask my resume button open the same
 dock, so it's discoverable without relying on someone noticing a bird. Four seconds after load a
 small speech bubble nudges first-time visitors once, then gets out of the way for good.
 
@@ -75,29 +80,29 @@ Focus moves into the input on open and back to the bird on close, and the bird c
 
 ## The resume assistant
 
-It runs **entirely in the visitor's browser**, reading the resume already rendered on the page.
+It runs entirely in the visitor's browser, reading the resume already rendered on the page.
 Nothing to install, nothing to sign into, nothing sent anywhere, and no cost to you at any traffic
 level. First question is answered in milliseconds.
 
 It is a retrieval and answer-composition engine, not a language model — and it says so when asked
 "are you an AI?".
 
-**It answers like a chatbot, not like a résumé.** Replies are written as short natural sentences
+It answers like a chatbot, not like a résumé. Replies are written as short natural sentences
 and delivered as *separate messages*, one at a time, with a typing indicator and a pause between
 them — the way a person actually types. Résumé bullets are condensed to their headline clause on
 the way out, so nothing arrives as a wall of formal prose:
 
-> **you** — what has he shipped at noteefy
-> **bird** — He's a Junior Software Engineer at Noteefy since May 2026 — mostly React, TypeScript, Python.
-> **bird** — Biggest piece: shipped a refund tracking dashboard end to end.
-> **bird** — Drove a multi-quarter admin dashboard consolidation.
-> **bird** — There's more where that came from.
+> you — what has he shipped at noteefy
+> bird — He's a Junior Software Engineer at Noteefy since May 2026 — mostly React, TypeScript, Python.
+> bird — Biggest piece: shipped a refund tracking dashboard end to end.
+> bird — Drove a multi-quarter admin dashboard consolidation.
+> bird — There's more where that came from.
 >
-> **you** — tell me more
-> **bird** — Closed 100+ Linear issues in three months across feature development, third-party API integrations, production debugging, and customer escalations.
+> you — tell me more
+> bird — Closed 100+ Linear issues in three months across feature development, third-party API integrations, production debugging, and customer escalations.
 
 | Capability | Example |
-| --- | --- |
+
 | Conversational memory | *"tell me more"* / *"what was the stack?"* resolve against whatever you just asked about, and it won't repeat a detail it already gave you |
 | Contextual follow-ups | the chip row rewrites itself after every answer to fit the current topic |
 | Small talk | greetings, thanks, "ok", goodbyes — short human replies, not résumé dumps |
@@ -106,27 +111,23 @@ the way out, so nothing arrives as a wall of formal prose:
 | Honest gaps | *"has he used Redis?"* → listed on the résumé, but no project calls it out |
 | Off-limits questions | *"expected salary?"* → declines and points to email |
 | Synonym expansion | *js → JavaScript*, *quant → quantitative*, *uni → college*, ~50 more |
-| Word-boundary matching | so "go" doesn't match "al**go**rithms" |
+| Word-boundary matching | so "go" doesn't match "algorithms" |
 | Whole-catalogue awareness | *"what else has he built?"* lists every public repo, and naming one (*"tell me about CampusFi"*) pulls its description and link |
 
 Beyond the three hand-written project cards, `scripts/fetch-projects.mjs` writes the full public
 repo list into a JSON island on the page, which the indexer reads. Refreshing the projects page and
 the assistant's knowledge is therefore one command:
 
-```bash
-GITHUB_TOKEN=$(gh auth token) node scripts/fetch-projects.mjs
-```
-
 Phrasing varies between runs (several openers per answer type), so asking the same thing twice
 doesn't produce a copy-paste reply.
 
-Because it reads the DOM, **the answers can never drift from the page**. Edit a bullet in
+Because it reads the DOM, the answers can never drift from the page. Edit a bullet in
 `index.html` and the assistant knows the new version immediately — there is no second copy of your
 resume to maintain.
 
 ### Tuning it
 
-Everything lives in section 7 of the `<script>` in `index.html`:
+Everything lives in section 7 of the `` in `index.html`:
 
 - `ALIASES` — shorthand visitors type, mapped onto resume vocabulary.
 - `INTENTS` / `SMALL_TALK` — question patterns with hand-written replies, each returning an array
@@ -139,8 +140,6 @@ Everything lives in section 7 of the `<script>` in `index.html`:
 - `PLUME` / `drawCompanion()` — the bird's colours and its sprite, if you'd rather it were a
   different creature.
 
----
-
 ## Upgrading to a real language model (optional)
 
 The catch with in-browser answering is that it retrieves and composes rather than reasoning, so it
@@ -148,9 +147,9 @@ can't handle a question phrased in a way you didn't anticipate. If you want that
 run a model — and the three constraints (instant · nothing on the visitor's end · free) can only
 all hold if *you* supply the model, not the visitor.
 
-The cheapest way is a **free-tier key held server-side**. Free tiers with no credit card required
-include Groq, Google Gemini, Cerebras, and OpenRouter's `:free` models. **This site runs on Groq's
-free tier, at $0:** `openai/gpt-oss-120b`, falling back to `openai/gpt-oss-20b`, with the first
+The cheapest way is a free-tier key held server-side. Free tiers with no credit card required
+include Groq, Google Gemini, Cerebras, and OpenRouter's `:free` models. This site runs on Groq's
+free tier, at $0: `openai/gpt-oss-120b`, falling back to `openai/gpt-oss-20b`, with the first
 words arriving in about a second. Groq allows each free model 8K tokens a minute and 200K a day, and
 every question carries the ~3.5K-token résumé, so that's roughly 2 questions a minute and 50 a day
 per model. Past that, the built-in engine answers instead.
@@ -158,7 +157,7 @@ per model. Past that, the built-in engine answers instead.
 (Vercel AI Gateway won't serve a request until a credit card is on file, even on its free tier,
 so it isn't used here.)
 
-**Live:** https://andrewloniewski.vercel.app serves the whole site and the endpoint; the GitHub
+Live: https://andrewloniewski.vercel.app serves the whole site and the endpoint; the GitHub
 Pages copy calls the same endpoint.
 
 This is deliberately *not* fine-tuning. A model trained on a five-page résumé memorises it badly
@@ -168,22 +167,7 @@ question (it's ~3k tokens) answers more accurately, and picks up an edit the mom
 The site is on GitHub Pages, which can only serve static files, so the endpoint is deployed to
 Vercel separately and the page calls it cross-origin:
 
-```bash
-npm run build:knowledge          # bundles knowledge/ + the repo catalogue into api/knowledge.js
-vercel                           # deploys api/chat.js (the static files come along, unused)
-vercel env add LLM_BASE_URL      # https://api.groq.com/openai/v1
-vercel env add LLM_MODEL         # openai/gpt-oss-120b
-vercel env add LLM_FALLBACK_MODEL  # openai/gpt-oss-20b — used when the main model is rate-limited
-vercel env add LLM_REASONING_EFFORT  # low — gpt-oss answers sooner and spends fewer tokens
-vercel env add LLM_API_KEY       # the free key from console.groq.com
-vercel --prod
-```
-
-Then point the page at it — one line in the `<head>` of `index.html`:
-
-```html
-<meta name="chat-endpoint" content="https://andrewloniewski.vercel.app/api/chat">
-```
+Then point the page at it — one line in the `` of `index.html`:
 
 and push to GitHub Pages. `ALLOWED_ORIGINS` (default `https://aloniewski2.github.io`) controls
 which sites may call the endpoint; add a custom domain there if you move to one. If you'd rather
@@ -193,18 +177,10 @@ serve the whole site from Vercel, leave the meta tag empty and it uses `/api/cha
 works with only env vars changed — and so do Ollama, LM Studio, llama.cpp, and vLLM. It has no
 dependencies.
 
-**Check it before you ship it.** `scripts/eval-chat.mjs` asks fifteen fixed questions — facts,
+Check it before you ship it. `scripts/eval-chat.mjs` asks fifteen fixed questions — facts,
 skills with and without evidence, salary, a made-up employer, a prompt-injection attempt — and
 fails any answer that misses a fact, invents one, leaks the prompt, or uses Markdown the chat
 window can't render. It also reports time to first token.
-
-```bash
-LLM_BASE_URL=https://api.groq.com/openai/v1 LLM_MODEL=openai/gpt-oss-120b \
-LLM_API_KEY=... npm run serve:chat            # api/chat.js on http://localhost:3000
-npm run eval:chat                             # score it
-CHAT_URL=https://andrewloniewski.vercel.app/api/chat EVAL_DELAY_MS=20000 npm run eval:chat
-                                              # score production, paced for the free tier
-```
 
 Add a case whenever a visitor's question gets a bad answer.
 
@@ -213,60 +189,17 @@ chip reads "Hosted model". If not, the built-in engine handles everything as bef
 errors or is rate-limited before writing anything, that question is answered by the built-in
 engine instead, so a visitor never sees an error in place of an answer.
 
-**Local development with Ollama:** if you're browsing from `http://localhost` and Ollama is
+Local development with Ollama: if you're browsing from `http://localhost` and Ollama is
 running, the page finds it and uses it — no config, no key. Ollama accepts browser requests from
 localhost origins by default.
 
-```bash
-ollama pull llama3.2
-npm start                        # serves this folder on http://localhost:8000
-```
-
 The header chip will read `Ollama · llama3.2`. This only ever applies to you on localhost; visitors
 to the deployed site are never asked to install anything.
-
-### `knowledge/`
-
-What the hosted model knows, in two tiers:
-
-- **Core: files directly in `knowledge/`** (`resume.md`, `about.md`) plus the public-repo
-  catalogue from `index.html`. Sent with every question, about 3K tokens.
-- **Lookup: files in subfolders.** `knowledge/projects/` holds every repo's README, written by
-  `scripts/fetch-readmes.mjs` with badges, images, code blocks and setup sections stripped out.
-  These are cut into ~1.4KB chunks, and each question gets only the best few (BM25 keyword
-  ranking, with a bonus for naming the project). All of them together are ~25K tokens, which a
-  free tier's 8K-tokens-a-minute limit could never send on every question.
-
-`about.md` is where everything the web doesn't know goes: what you're looking for, availability,
-interests, the story behind projects. Edit it in plain Markdown.
-
-```bash
-node scripts/fetch-readmes.mjs   # refresh project READMEs (after fetch-projects.mjs)
-npm run build:knowledge          # rebuild api/knowledge.js
-vercel --prod                    # redeploy
-```
-
----
-
-## Deploying
-
-It's a static site. Anything works — Netlify, GitHub Pages, Cloudflare Pages, Vercel:
-
-```bash
-npm start        # local preview at http://localhost:8000
-```
-
-Push the folder to a repo and point any static host at it. The assistant works on all of them,
-because it never leaves the browser.
 
 ## The projects page
 
 `projects.html` lists every public repo on `github.com/aloniewski2`, newest first, with
 client-side filters by language. Refresh it whenever you push something new:
-
-```bash
-node scripts/fetch-projects.mjs
-```
 
 That re-reads the GitHub API, rewrites the data block in `projects.html`, and updates the
 "N more on GitHub" count on the main page. Unauthenticated GitHub allows 60 requests an hour,
@@ -278,10 +211,10 @@ that still have neither, so you know what to go fix.
 
 ## Before you publish
 
-**LinkedIn URL** — two `TODO` comments in `index.html` point at
+LinkedIn URL — two `TODO` comments in `index.html` point at
 `https://www.linkedin.com/in/YOUR-HANDLE`. Replace both.
 
-**LeakGuard's repo is missing.** `github.com/aloniewski2/subscription-saver` (the URL on your
+LeakGuard's repo is missing. `github.com/aloniewski2/subscription-saver` (the URL on your
 résumé) returns 404 — it's either private or was never pushed. The card on the main page now says
 "source not public yet" instead of linking to a dead page; restore the button once the repo is
 public. There's a commented-out version of it in `index.html` ready to uncomment.
@@ -289,8 +222,8 @@ public. There's a commented-out version of it in `index.html` ready to uncomment
 ## Structure of `index.html`
 
 | Region | What it does |
-| --- | --- |
-| `<style>` | Design tokens, pixel chrome (hard borders + offset shadows), terminal, layout |
+
+| `` | Design tokens, pixel chrome (hard borders + offset shadows), terminal, layout |
 | JS §1 | 5×7 bitmap font — hand-coded glyphs rendered to canvas, with outline + drop shadow |
 | JS §2 | Day-cycle palettes (morning → midday → golden hour → dusk → night) |
 | JS §3 | Sky engine: dithered bands, cloud sprites, sun/moon, birds, balloon, hills, foreground haze |
